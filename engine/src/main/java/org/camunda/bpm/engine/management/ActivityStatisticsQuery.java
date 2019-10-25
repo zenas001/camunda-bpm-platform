@@ -34,4 +34,7 @@ public interface ActivityStatisticsQuery extends Query<ActivityStatisticsQuery, 
    * Include an aggregation of incidents of the assigned incidentType in the result.
    */
   ActivityStatisticsQuery includeIncidentsForType(String incidentType);
+
+  /** Only select historic activities of process instances with the given IDs */
+  ActivityStatisticsQuery processInstanceIdIn(String... processInstanceIds);
 }

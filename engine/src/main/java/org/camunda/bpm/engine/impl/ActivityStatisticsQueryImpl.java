@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.history.HistoricActivityStatisticsQuery;
 import org.camunda.bpm.engine.impl.db.PermissionCheck;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
@@ -36,6 +37,7 @@ public class ActivityStatisticsQueryImpl extends
   protected String processDefinitionId;
   protected boolean includeIncidents;
   protected String includeIncidentsForType;
+  protected String[] processInstanceIds;
 
   // for internal use
   protected List<PermissionCheck> processInstancePermissionChecks = new ArrayList<PermissionCheck>();
@@ -79,6 +81,13 @@ public class ActivityStatisticsQueryImpl extends
     return this;
   }
 
+  @Override
+  public ActivityStatisticsQuery processInstanceIdIn(String... processInstanceIds) {
+    ensureNotNull("processInstanceIds", (Object[]) processInstanceIds);
+    this.processInstanceIds = processInstanceIds;
+    return this;
+  }
+
   public boolean isFailedJobsToInclude() {
     return includeFailedJobs;
   }
@@ -89,6 +98,10 @@ public class ActivityStatisticsQueryImpl extends
 
   public String getProcessDefinitionId() {
     return processDefinitionId;
+  }
+
+  public String[] getProcessInstanceIds() {
+    return processInstanceIds;
   }
 
   protected void checkQueryOk() {

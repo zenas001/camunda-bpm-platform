@@ -444,6 +444,9 @@
             true but no current activity is set -->
           and E.ACT_ID_ is not null
 
+          <bind name="processInstanceColumn" value="'E.PROC_INST_ID_'"/>
+          <include refid="processInstanceIdIn" />
+
           <bind name="permissionChecks" value="processInstancePermissionChecks" />
           <include refid="acitivityStatisticsAuthorizationCheck" />
 
@@ -503,6 +506,9 @@
                         true but no current activity is set -->
                       and E.ACT_ID_ is not null
 
+                      <bind name="processInstanceColumn" value="'E.PROC_INST_ID_'"/>
+                      <include refid="processInstanceIdIn" />
+
                   <bind name="permissionChecks" value="processInstancePermissionChecks" />
                   <include refid="acitivityStatisticsAuthorizationCheck" />
 
@@ -529,6 +535,9 @@
                       where
                           JOB.PROCESS_DEF_ID_ = #{processDefinitionId}
                           and JOB.RETRIES_ = 0
+
+                          <bind name="processInstanceColumn" value="'JOB.PROCESS_INSTANCE_ID_'"/>
+                          <include refid="processInstanceIdIn" />
 
                           <bind name="permissionChecks" value="jobPermissionChecks" />
                           <include refid="acitivityStatisticsAuthorizationCheck" />
@@ -560,6 +569,9 @@
                           <if test="includeIncidentsForType != null">
                           and I.INCIDENT_TYPE_ = #{includeIncidentsForType}
                           </if>
+
+                          <bind name="processInstanceColumn" value="'I.PROC_INST_ID_'"/>
+                          <include refid="processInstanceIdIn" />
 
                           <bind name="permissionChecks" value="incidentPermissionChecks" />
                           <include refid="acitivityStatisticsAuthorizationCheck" />
@@ -596,6 +608,9 @@
                     E.PROC_DEF_ID_ = #{processDefinitionId}
                     and E.IS_ACTIVE_ = ${trueConstant}
 
+                    <bind name="processInstanceColumn" value="'E.PROC_INST_ID_'"/>
+                    <include refid="processInstanceIdIn" />
+
                     <bind name="permissionChecks" value="processInstancePermissionChecks" />
                     <include refid="acitivityStatisticsAuthorizationCheck" />
 
@@ -630,6 +645,9 @@
                 where
                     JOB.PROCESS_DEF_ID_ = #{processDefinitionId}
                     and JOB.RETRIES_ = 0
+
+                    <bind name="processInstanceColumn" value="'JOB.PROCESS_INSTANCE_ID_'"/>
+                    <include refid="processInstanceIdIn" />
 
                     <bind name="permissionChecks" value="jobPermissionChecks" />
                     <include refid="acitivityStatisticsAuthorizationCheck" />
@@ -670,6 +688,9 @@
                   and I.INCIDENT_TYPE_ = #{includeIncidentsForType}
                   </if>
 
+                  <bind name="processInstanceColumn" value="'I.PROC_INST_ID_'"/>
+                  <include refid="processInstanceIdIn" />
+
                   <bind name="permissionChecks" value="incidentPermissionChecks" />
                   <include refid="acitivityStatisticsAuthorizationCheck" />
 
@@ -701,6 +722,15 @@
           AND AUTH.RESOURCE_ID_ IS NOT NULL
         </otherwise>
       </choose>
+    </if>
+  </sql>
+
+  <sql id="processInstanceIdIn">
+    <if test="processInstanceIds != null">
+      and ${processInstanceColumn} in
+      <foreach item="processInstanceId" index="index" collection="processInstanceIds" open="(" separator="," close=")">
+        #{processInstanceId}
+      </foreach>
     </if>
   </sql>
 

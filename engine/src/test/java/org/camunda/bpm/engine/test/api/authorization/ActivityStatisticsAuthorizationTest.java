@@ -23,7 +23,6 @@ import static org.camunda.bpm.engine.authorization.Resources.PROCESS_DEFINITION;
 import static org.camunda.bpm.engine.authorization.Resources.PROCESS_INSTANCE;
 
 import java.util.List;
-
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.impl.AbstractQuery;
 import org.camunda.bpm.engine.management.ActivityStatistics;
@@ -480,6 +479,115 @@ public class ActivityStatisticsAuthorizationTest extends AuthorizationTest {
     assertEquals("scriptTask", activityResult.getId());
     assertEquals(0, activityResult.getFailedJobs());
     assertTrue(activityResult.getIncidentStatistics().isEmpty());
+  }
+
+  // processInstanceIdIn //////////////////////////////////////////////////////////////
+
+  public void testQueryProcessInstanceIdsWithReadPermissionOnAnyProcessInstance() {
+    // given
+    String processDefinitionId = selectProcessDefinitionByKey(ONE_INCIDENT_PROCESS_KEY).getId();
+
+    disableAuthorization();
+    String processInstanceId = runtimeService.createProcessInstanceQuery().list().get(0).getId();
+    enableAuthorization();
+
+    createGrantAuthorization(PROCESS_DEFINITION, ONE_INCIDENT_PROCESS_KEY, userId, READ);
+    createGrantAuthorization(PROCESS_INSTANCE, ANY, userId, READ);
+
+    // when
+    ActivityStatistics statistics = managementService.createActivityStatisticsQuery(processDefinitionId)
+        .processInstanceIdIn(processInstanceId)
+        .singleResult();
+
+    // then
+    assertNotNull(statistics);
+    assertEquals("scriptTask", statistics.getId());
+    assertEquals(1, statistics.getInstances());
+    assertEquals(0, statistics.getFailedJobs());
+    assertTrue(statistics.getIncidentStatistics().isEmpty());
+  }
+
+  public void testQueryProcessInstanceIdsIncludingFailedJobsWithReadPermissionOnAnyProcessInstance() {
+    // given
+    String processDefinitionId = selectProcessDefinitionByKey(ONE_INCIDENT_PROCESS_KEY).getId();
+
+    disableAuthorization();
+    String processInstanceId = runtimeService.createProcessInstanceQuery().list().get(0).getId();
+    enableAuthorization();
+
+    createGrantAuthorization(PROCESS_DEFINITION, ONE_INCIDENT_PROCESS_KEY, userId, READ);
+    createGrantAuthorization(PROCESS_INSTANCE, ANY, userId, READ);
+
+    // when
+    ActivityStatistics statistics = managementService
+        .createActivityStatisticsQuery(processDefinitionId)
+        .processInstanceIdIn(processInstanceId)
+        .includeFailedJobs()
+        .singleResult();
+
+    // then
+    assertNotNull(statistics);
+    assertEquals("scriptTask", statistics.getId());
+    assertEquals(1, statistics.getInstances());
+    assertEquals(1, statistics.getFailedJobs());
+    assertTrue(statistics.getIncidentStatistics().isEmpty());
+  }
+
+  public void testQueryProcessInstanceIdsIncludingIncidentsWithReadPermissionOnAnyProcessInstance() {
+    // given
+    String processDefinitionId = selectProcessDefinitionByKey(ONE_INCIDENT_PROCESS_KEY).getId();
+
+    disableAuthorization();
+    String processInstanceId = runtimeService.createProcessInstanceQuery().list().get(0).getId();
+    enableAuthorization();
+
+    createGrantAuthorization(PROCESS_DEFINITION, ONE_INCIDENT_PROCESS_KEY, userId, READ);
+    createGrantAuthorization(PROCESS_INSTANCE, ANY, userId, READ);
+
+    // when
+    ActivityStatistics statistics = managementService
+        .createActivityStatisticsQuery(processDefinitionId)
+        .processInstanceIdIn(processInstanceId)
+        .includeIncidents()
+        .singleResult();
+
+    // then
+    assertNotNull(statistics);
+    assertEquals("scriptTask", statistics.getId());
+    assertEquals(1, statistics.getInstances());
+    assertEquals(0, statistics.getFailedJobs());
+    assertFalse(statistics.getIncidentStatistics().isEmpty());
+    IncidentStatistics incidentStatistics = statistics.getIncidentStatistics().get(0);
+    assertEquals(1, incidentStatistics.getIncidentCount());
+  }
+
+  public void testQueryProcessInstanceIdsIncludingIncidentsAndFailedJobsWithReadPermissionOnAnyProcessInstance() {
+    // given
+    String processDefinitionId = selectProcessDefinitionByKey(ONE_INCIDENT_PROCESS_KEY).getId();
+
+    disableAuthorization();
+    String processInstanceId = runtimeService.createProcessInstanceQuery().list().get(0).getId();
+    enableAuthorization();
+
+    createGrantAuthorization(PROCESS_DEFINITION, ONE_INCIDENT_PROCESS_KEY, userId, READ);
+    createGrantAuthorization(PROCESS_INSTANCE, ANY, userId, READ);
+
+    // when
+    ActivityStatistics statistics = managementService
+        .createActivityStatisticsQuery(processDefinitionId)
+        .processInstanceIdIn(processInstanceId)
+        .includeIncidents()
+        .includeFailedJobs()
+        .singleResult();
+
+    // then
+    assertNotNull(statistics);
+    assertEquals("scriptTask", statistics.getId());
+    assertEquals(1, statistics.getInstances());
+    assertEquals(1, statistics.getFailedJobs());
+    assertFalse(statistics.getIncidentStatistics().isEmpty());
+    IncidentStatistics incidentStatistics = statistics.getIncidentStatistics().get(0);
+    assertEquals(1, incidentStatistics.getIncidentCount());
   }
 
   // helper ///////////////////////////////////////////////////////////////////////////
