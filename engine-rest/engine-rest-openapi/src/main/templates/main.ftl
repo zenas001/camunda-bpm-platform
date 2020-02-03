@@ -36,12 +36,18 @@
       "BatchDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/batch/BatchDto.ftl">,
       "DeleteProcessInstancesDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/batch/DeleteProcessInstancesDto.ftl">,
 
+      "ProcessInstanceDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/ProcessInstanceDto.ftl">,
       "ProcessInstanceQueryDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/ProcessInstanceQueryDto.ftl">,
       "SortingDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/SortingDto.ftl">,
+      "TriggerVariableValueDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/TriggerVariableValueDto.ftl">,
+
+      "ProcessInstanceModificationDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/modification/ProcessInstanceModificationDto.ftl">,
+      "ProcessInstanceModificationInstructionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/modification/ProcessInstanceModificationInstructionDto.ftl">,
 
       "AtomLink": <#include "/models/org/camunda/bpm/engine/rest/dto/AtomLink.ftl">,
       "CountResultDto": <#include "/models/org/camunda/bpm/engine/rest/dto/CountResultDto.ftl">,
-      "ExceptionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/ExceptionDto.ftl">
+      "ExceptionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/ExceptionDto.ftl">,
+      "VariableQueryParameterDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableQueryParameterDto.ftl">
     }
   }
 }

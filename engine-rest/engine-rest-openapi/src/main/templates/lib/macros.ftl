@@ -14,7 +14,6 @@
     "description": "${description}"
   }
 </#macro>
-<#-- TODO arrays -->
 
 <#macro response responseCode refDto desc>
     "${responseCode}": {

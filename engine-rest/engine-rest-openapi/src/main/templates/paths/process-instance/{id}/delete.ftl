@@ -53,7 +53,7 @@
   ],
   "responses": {
      "204": {
-       "description": "No Content"
+       "description": "Request successful."
      },
      "400": {
        "description": "Bad Request\n* If no name was given\n* If the variable value or type is invalid, for example if the value could not be parsed to an integer value or the passed variable type is not supported\n* If a tenant id and an execution id is specified",

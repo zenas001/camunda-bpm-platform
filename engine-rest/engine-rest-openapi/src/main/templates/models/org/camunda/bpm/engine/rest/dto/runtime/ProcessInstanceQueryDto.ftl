@@ -123,14 +123,13 @@
       "type": "boolean",
       "description": "Restrict the query to all process instances that are leaf instances. (i.e. don't have any sub instances)"
     },
-    <#--
     "variables": {
       "type": "array",
+      "description": "A JSON array to only include process instances that have variables with certain values.\nThe array consists of objects with the three properties name, operator and value. name (String) is the variable name, operator (String) is the comparison operator to be used and value the variable value.\nvalue may be String, Number or Boolean.\nValid operator values are: eq - equal to; neq - not equal to; gt - greater than; gteq - greater than or equal to; lt - lower than; lteq - lower than or equal to; like.",
       "items": {
         "$ref": "#/components/schemas/VariableQueryParameterDto"
       }
     },
-    -->
     "variableNamesIgnoreCase": {
       "type": "boolean",
       "description": "Match all variable names in this query case-insensitively. If set to true variableName and variablename are treated as equal."
