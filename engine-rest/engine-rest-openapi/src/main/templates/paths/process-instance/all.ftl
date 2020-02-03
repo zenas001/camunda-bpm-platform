@@ -12,6 +12,26 @@
     "post":
      <#include "/paths/process-instance/{id}/modification/post.ftl">
   },
+  "/process-instance/{id}/variables": {
+    "get":
+    <#include "/paths/process-instance/{id}/variables/get.ftl">,
+    "post":
+    <#include "/paths/process-instance/{id}/variables/post.ftl">
+  },
+  "/process-instance/{id}/variables/{varName}": {
+    "get":
+    <#include "/paths/process-instance/{id}/variables/{varName}/get.ftl">,
+    "put":
+    <#include "/paths/process-instance/{id}/variables/{varName}/put.ftl">,
+    "delete":
+    <#include "/paths/process-instance/{id}/variables/{varName}/delete.ftl">
+  },
+  "/process-instance/{id}/variables/{varName}/data": {
+    "get":
+    <#include "/paths/process-instance/{id}/variables/{varName}/data/get.ftl">,
+    "post":
+    <#include "/paths/process-instance/{id}/variables/{varName}/data/post.ftl">
+  },
   "/process-instance/count": {
     "get":
     <#include "/paths/process-instance/count/get.ftl">,

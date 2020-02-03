@@ -47,7 +47,10 @@
       "AtomLink": <#include "/models/org/camunda/bpm/engine/rest/dto/AtomLink.ftl">,
       "CountResultDto": <#include "/models/org/camunda/bpm/engine/rest/dto/CountResultDto.ftl">,
       "ExceptionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/ExceptionDto.ftl">,
-      "VariableQueryParameterDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableQueryParameterDto.ftl">
+      "PatchVariablesDto": <#include "/models/org/camunda/bpm/engine/rest/dto/PatchVariablesDto.ftl">,
+      "VariableQueryParameterDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableQueryParameterDto.ftl">,
+      "VariableDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableDto.ftl">,
+      "VariableValueDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableValueDto.ftl">
     }
   }
 }
