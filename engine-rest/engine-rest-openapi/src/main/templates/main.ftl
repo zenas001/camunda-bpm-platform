@@ -26,6 +26,8 @@
   "components": {
     "schemas": {
 
+      "HistoricProcessInstanceQueryDto": <#include "/models/org/camunda/bpm/engine/rest/dto/history/HistoricProcessInstanceQueryDto.ftl">,
+
       "DeploymentDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/DeploymentDto.ftl">,
       "CaseDefinitionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/CaseDefinitionDto.ftl">,
       "DecisionDefinitionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/DecisionDefinitionDto.ftl">,
@@ -38,6 +40,7 @@
 
       "ProcessInstanceDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/ProcessInstanceDto.ftl">,
       "ProcessInstanceQueryDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/ProcessInstanceQueryDto.ftl">,
+      "SetJobRetriesByProcessDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/SetJobRetriesByProcessDto.ftl">,
       "SortingDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/SortingDto.ftl">,
       "TriggerVariableValueDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/TriggerVariableValueDto.ftl">,
 
