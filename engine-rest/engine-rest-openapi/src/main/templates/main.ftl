@@ -49,7 +49,6 @@
       "ExceptionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/ExceptionDto.ftl">,
       "PatchVariablesDto": <#include "/models/org/camunda/bpm/engine/rest/dto/PatchVariablesDto.ftl">,
       "VariableQueryParameterDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableQueryParameterDto.ftl">,
-      "VariableDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableDto.ftl">,
       "VariableValueDto": <#include "/models/org/camunda/bpm/engine/rest/dto/VariableValueDto.ftl">
     }
   }
