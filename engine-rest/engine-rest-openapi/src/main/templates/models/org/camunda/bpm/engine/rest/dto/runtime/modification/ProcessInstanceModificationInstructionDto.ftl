@@ -12,11 +12,7 @@
       ]
     },
     "variables" : {
-      "type" : "array",
-      "items" : {
-        "$ref" : "#/components/schemas/TriggerVariableValueDto"
-      },
-      "description": "Can be used with instructions of type startBeforeActivity, startAfterActivity, and startTransition. A JSON object containing variable key-value pairs. Each key is a variable name and each value a JSON variable value object."
+      "$ref" : "#/components/schemas/TriggerVariableValueDto"
     },
     "activityId" : {
       "type" : "string",
@@ -45,5 +41,8 @@
   },
   "discriminator" : {
     "propertyName" : "type"
-  }
+  },
+  "required": [
+    "type"
+  ]
 }

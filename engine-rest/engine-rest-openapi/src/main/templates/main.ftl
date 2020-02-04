@@ -1,6 +1,6 @@
 <#import "/lib/macros.ftl" as lib>
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.2",
   "info": {
     "title": "[Test] Camunda REST API",
     "description": "Swagger OpenApi Spec for some Camunda REST API.",

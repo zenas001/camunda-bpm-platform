@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "description": "Used in /process-instance/modification.\nCan be used with instructions of type startBeforeActivity, startAfterActivity, and startTransition. A JSON object containing variable key-value pairs. Each key is a variable name and each value a JSON variable value object.",
   "additionalProperties": {
     "properties": {
       "value": {
@@ -12,7 +13,7 @@
       },
       "valueInfo": {
         "description": "A JSON object containing additional, value-type-dependent properties.\nFor serialized variables of type Object, the following properties can be provided:\n\n* objectTypeName: A string representation of the object's type name.\n* serializationDataFormat: The serialization format used to store the variable.\nFor serialized variables of type File, the following properties can be provided:\n\n* filename: The name of the file. This is not the variable name but the name that will be used when downloading the file again.\n* mimetype: The MIME type of the file that is being uploaded.\n* encoding: The encoding of the file that is being uploaded.",
-        "type": "object",           
+        "type": "object",
         "oneOf": [
           {
             "properties": {

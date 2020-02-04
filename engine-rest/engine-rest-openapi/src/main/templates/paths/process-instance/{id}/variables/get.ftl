@@ -30,7 +30,10 @@
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/VariableDto"
+            "type": "object",
+            "additionalProperties": {
+              "$ref" : "#/components/schemas/VariableValueDto"
+            }
           }
         }
       }
