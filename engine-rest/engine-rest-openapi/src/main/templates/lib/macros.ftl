@@ -15,13 +15,35 @@
   }
 </#macro>
 
-<#macro response responseCode refDto desc>
+<#macro property name type required=false description="TODO" itemType="string">
+    "${name}": {
+      "type": "${type}",
+      <#if required>
+        "required": true,
+      </#if>
+      <#if type="array">
+        "items": {
+          ${itemType}
+        },
+      </#if>
+      "description": "${description}"
+    }
+</#macro>
+
+<#macro response responseCode refDto desc array=false>
     "${responseCode}": {
        "description": "${desc}",
        "content": {
          "application/json": {
            "schema": {
+             <#if array>
+               "type" : "array",
+               "items" : {
+             </#if>
              "$ref": "#/components/schemas/${refDto}"
+             <#if array>
+               }
+             </#if>
            }
          }
        }

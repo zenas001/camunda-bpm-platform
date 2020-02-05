@@ -1,18 +1,14 @@
 {
   "type" : "object",
   "properties" : {
+    <#-- NOTE: "processInstanceQuery" and "historicProcessInstanceQuery" are referenced in the request body
+         Do not add them here -->
     "processInstances" : {
       "type" : "array",
       "items" : {
         "type" : "string"
       },
       "description": "A list of process instance ids to fetch jobs, for which retries will be set."
-    },
-    "processInstanceQuery" : {
-      "$ref" : "#/components/schemas/ProcessInstanceQueryDto"
-    },
-    "historicProcessInstanceQuery" : {
-      "$ref" : "#/components/schemas/HistoricProcessInstanceQueryDto"
     },
     "retries" : {
       "type" : "integer",

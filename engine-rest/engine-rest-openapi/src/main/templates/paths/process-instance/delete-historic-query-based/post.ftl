@@ -1,6 +1,6 @@
 {
-  "operationId" : "setRetriesByProcess",
-  "description": "Create a batch to set retries of jobs associated with given processes asynchronously.",
+  "operationId": "deleteAsyncHistoricQueryBased",
+  "description": "Deletes a set of process instances asynchronously (batch) based on a historic process instance query.",
   "tags": [
     "Process instance"
   ],
@@ -10,23 +10,22 @@
         "schema" : {
           "allOf": [
             {
-              "$ref": "#/components/schemas/SetJobRetriesByProcessDto"
+              "$ref": "#/components/schemas/DeleteProcessInstancesDto"
             },
             {
               "type": "object",
               "properties": {
-                "processInstanceQuery": {
-                  "$ref": "#/components/schemas/ProcessInstanceQueryDto"
+                "historicProcessInstanceQuery": {
+                  "$ref": "#/components/schemas/HistoricProcessInstanceQueryDto"
                 }
               }
             }
           ]
         }
       }
-    },
-   "description": "Please note that if both processInstances and processInstanceQuery are provided, then the resulting execution will be performed on the union of these sets."
+    }
   },
-  "responses" : {
+  "responses": {
      "200": {
        "description": "Request successful.",
        "content": {
@@ -38,7 +37,7 @@
        }
      },
      "400": {
-       "description": "Returned if some of the query parameters are invalid, for example if neither processInstanceIds, nor processInstanceQuery is present. Or if the retry count is not specified. ",
+       "description": "Bad Request\n* Returned if some of the query parameters are invalid, i.e., neither processInstanceIds, nor historicProcessInstanceQuery is present",
        "content": {
          "application/json": {
            "schema": {
@@ -47,5 +46,5 @@
          }
        }
      }
-   }
+  }
 }

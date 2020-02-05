@@ -8,9 +8,21 @@
     "delete":
     <#include "/paths/process-instance/{id}/delete.ftl">
   },
+  "/process-instance/{id}/activity-instances": {
+    "get":
+     <#include "/paths/process-instance/{id}/activity-instances/get.ftl">
+  },
   "/process-instance/{id}/modification": {
     "post":
      <#include "/paths/process-instance/{id}/modification/post.ftl">
+  },
+  "/process-instance/{id}/modification-async": {
+    "post":
+     <#include "/paths/process-instance/{id}/modification-async/post.ftl">
+  },
+  "/process-instance/{id}/suspended": {
+    "put":
+    <#include "/paths/process-instance/{id}/suspended/put.ftl">
   },
   "/process-instance/{id}/variables": {
     "get":
@@ -41,4 +53,20 @@
   "/process-instance/delete": {
     "post":
     <#include "/paths/process-instance/delete/post.ftl">
+  },
+  "/process-instance/delete-historic-query-based": {
+    "post":
+    <#include "/paths/process-instance/delete-historic-query-based/post.ftl">
+  },
+  "/process-instance/job-retries": {
+    "post":
+    <#include "/paths/process-instance/job-retries/post.ftl">
+  },
+  "/process-instance/job-retries-historic-query-based": {
+    "post":
+    <#include "/paths/process-instance/job-retries-historic-query-based/post.ftl">
+  },
+  "/process-instance/suspended": {
+    "put":
+    <#include "/paths/process-instance/suspended/put.ftl">
   }

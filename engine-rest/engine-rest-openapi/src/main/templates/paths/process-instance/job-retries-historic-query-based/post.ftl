@@ -1,6 +1,6 @@
 {
-  "operationId" : "setRetriesByProcess",
-  "description": "Create a batch to set retries of jobs associated with given processes asynchronously.",
+  "operationId" : "setRetriesByProcessHistoricQueryBased",
+  "description": "Create a batch to set retries of jobs asynchronously based on a historic process instance query.",
   "tags": [
     "Process instance"
   ],
@@ -15,8 +15,8 @@
             {
               "type": "object",
               "properties": {
-                "processInstanceQuery": {
-                  "$ref": "#/components/schemas/ProcessInstanceQueryDto"
+                "historicProcessInstanceQuery": {
+                  "$ref": "#/components/schemas/HistoricProcessInstanceQueryDto"
                 }
               }
             }
@@ -38,7 +38,7 @@
        }
      },
      "400": {
-       "description": "Returned if some of the query parameters are invalid, for example if neither processInstanceIds, nor processInstanceQuery is present. Or if the retry count is not specified. ",
+       "description": "Returned if some of the query parameters are invalid, for example if neither processInstanceIds, nor historicProcessInstanceQuery is present. Or if the retry count is not specified. ",
        "content": {
          "application/json": {
            "schema": {
