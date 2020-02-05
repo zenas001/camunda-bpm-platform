@@ -5,7 +5,7 @@
     "Process instance"
   ],
   "parameters" : [ 
-    <#include "/paths/process-instance/pdq.ftl">,
+    <#include "/paths/process-instance/process-instance-query-params.ftl">,
     <@lib.parameter name="sortBy"
         location="query"
         type="string"

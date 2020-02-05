@@ -5,7 +5,7 @@
     "Process instance"
   ],
   "parameters": [
-    <#include "/paths/process-instance/pdq.ftl">
+    <#include "/paths/process-instance/process-instance-query-params.ftl">
   ],
   "responses": {
     <@lib.response responseCode="200" refDto="CountResultDto" desc="Request successful."/>,

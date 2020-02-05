@@ -5,7 +5,16 @@
     "Process instance"
   ],
   "parameters" : [
-   {
+    <@lib.parameter name="firstResult"
+        location="query"
+        type="integer"
+        description="Pagination of results. Specifies the index of the first result to return."/>,
+    <@lib.parameter name="maxResults"
+        location="query"
+        type="integer"
+        description="Pagination of results. Specifies the maximum number of results to return. Will return less results if there are no more results left."/>
+
+   <#-- {
       "name": "firstResult",
       "in": "query",
       "schema": {
@@ -20,7 +29,7 @@
         "type": "integer"
       },
       "description": "Pagination of results. Specifies the maximum number of results to return. Will return less results if there are no more results left."
-    } 
+    }-->
    ],
   "requestBody" : {
     "content" : {
@@ -32,7 +41,11 @@
     }
   },
   "responses" : {
-    "200" : {
+    <@lib.response responseCode="200" refDto="ProcessInstanceDto" desc="Request successful." array=true/>,
+    <@lib.response responseCode="400" refDto="ExceptionDto"
+                   desc="Bad Request\n*Returned if some of the query parameters are invalid, for example if a sortOrder parameter is supplied, but no sortBy, or if an invalid operator for variable comparison is used."/>
+
+    <#-- "200" : {
       "description" : "Request successful.",
       "content" : {
         "application/json" : {
@@ -55,5 +68,6 @@
         }
       }
     }
+     -->
   }
 }
