@@ -1,14 +1,18 @@
 {
-  "type": "object",
   "properties": {
     "value": {
-         "oneOf": [
-           {"type": "boolean"},
-           {"type": "string"},
-           {"type": "number"},
-           {"type": "object"}
-         ],
-       "description": "The variable's value. Value differs depending on the variable's type and on the deserializeValues parameter."
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "description": "The variable's value. Value differs depending on the variable's type and on the deserializeValues parameter."
     },
     "type": {
       "type": "string",
@@ -27,10 +31,6 @@
             "serializationDataFormat": {
               "type": "string",
               "description": " The serialization format used to store the variable."
-            },
-            "transient": {
-              "type": "boolean",
-              "writeOnly": true
             }
           }
         },
@@ -44,10 +44,6 @@
             },
             "encoding": {
               "type": "string"
-            },
-            "transient": {
-              "type": "boolean",
-              "writeOnly": true
             }
           }
         }
