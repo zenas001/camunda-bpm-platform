@@ -34,7 +34,8 @@
         enum=false enumValues='""'
         hasDefault=false defaultValue=false
         required=false description="TODO"
-        itemType="string" format="none" last=false >
+        itemType="string" dto=""
+        format="none" last=false >
     "${name}": {
 
       "type": "${type}",
@@ -59,7 +60,13 @@
 
       <#if type="array">
         "items": {
-          ${itemType}
+
+          <#if dto="">
+            "type": "${itemType}"
+          <#else>
+            "$ref": "#/components/schemas/${dto}"
+          </#if>
+
         },
       </#if>
 

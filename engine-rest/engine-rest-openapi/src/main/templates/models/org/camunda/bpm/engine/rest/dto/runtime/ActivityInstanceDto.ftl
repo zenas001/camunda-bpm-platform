@@ -40,31 +40,31 @@
     <@lib.property
         name = "childActivityInstances"
         type = "array"
-        itemType = '"$ref": "#/components/schemas/ActivityInstanceDto"'
+        dto = "ActivityInstanceDto"
         description = "A list of child activity instances."/>
 
     <@lib.property
         name = "childTransitionInstances"
         type = "array"
-        itemType='"$ref": "#/components/schemas/TransitionInstanceDto"'
+        dto="TransitionInstanceDto"
         description = "A list of child transition instances. A transition instance represents an execution waiting in an asynchronous continuation."/>
 
     <@lib.property
         name = "executionIds"
         type = "array"
-        itemType = '"type": "string"'
+        itemType = "string"
         description = "A list of execution ids."/>
 
     <@lib.property
         name = "incidentIds"
         type = "array"
-        itemType = '"type": "string"'
+        itemType = "string"
         description = "A list of incident ids."/>
 
     <@lib.property
         name = "incidents"
         type = "array"
-        itemType='"$ref": "#/components/schemas/ActivityInstanceIncidentDto"'
+        dto="ActivityInstanceIncidentDto"
         last = true
         description = "A list of JSON objects containing incident specific properties:
 * id: the id of the incident

@@ -45,13 +45,13 @@
     <@lib.property
         name="incidentIds"
         type="array"
-        itemType='"type": "string"'
+        itemType="string"
         description="A list of incident ids."/>
 
     <@lib.property
         name="incidents"
         type="array"
-        itemType='"$ref": "#/components/schemas/ActivityInstanceIncidentDto"'
+        dto="ActivityInstanceIncidentDto"
         last =true
         description="A list of JSON objects containing incident specific properties:
 * id: the id of the incident
