@@ -5,13 +5,16 @@
     "Process instance"
   ],
   "parameters" : [
-    <@lib.parameter name="firstResult"
+    <@lib.parameter
+        name="firstResult"
         location="query"
         type="integer"
-        description="Pagination of results. Specifies the index of the first result to return."/>,
-    <@lib.parameter name="maxResults"
+        description="Pagination of results. Specifies the index of the first result to return."/>
+    <@lib.parameter
+        name="maxResults"
         location="query"
         type="integer"
+        last=true
         description="Pagination of results. Specifies the maximum number of results to return. Will return less results if there are no more results left."/>
 
    <#-- {
@@ -41,9 +44,17 @@
     }
   },
   "responses" : {
-    <@lib.response responseCode="200" refDto="ProcessInstanceDto" desc="Request successful." array=true/>,
-    <@lib.response responseCode="400" refDto="ExceptionDto"
-                   desc="Bad Request\n*Returned if some of the query parameters are invalid, for example if a sortOrder parameter is supplied, but no sortBy, or if an invalid operator for variable comparison is used."/>
+    <@lib.response
+        code="200"
+        dto="ProcessInstanceDto"
+        array=true
+        desc="Request successful."/>
+
+    <@lib.response
+        code="400"
+        dto="ExceptionDto"
+        last=true
+        desc="Bad Request\n*Returned if some of the query parameters are invalid, for example if a sortOrder parameter is supplied, but no sortBy, or if an invalid operator for variable comparison is used."/>
 
     <#-- "200" : {
       "description" : "Request successful.",

@@ -5,10 +5,12 @@
   ],
   "description": "Retrieves an Activity Instance (Tree) for a given process instance by id.",
   "parameters" : [
-    <@lib.parameter name="id"
+    <@lib.parameter
+        name="id"
         location="path"
         type="integer"
         required=true
+        last=true
         description="The id of the process instance for which the activity instance should be retrieved."/>
   ],
   "responses": {

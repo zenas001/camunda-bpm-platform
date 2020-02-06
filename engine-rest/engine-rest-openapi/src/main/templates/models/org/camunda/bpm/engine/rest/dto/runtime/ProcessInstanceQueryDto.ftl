@@ -2,15 +2,21 @@
   "type": "object",
   "description": "A process instance query which defines a group of process instances",
   "properties": {
-    <@lib.property name="deploymentId"
+    <@lib.property
+        name="deploymentId"
         type="string"
-        description="Filter by the deployment the id belongs to."/>,
-    <@lib.property name="processDefinitionId"
+        description="Filter by the deployment the id belongs to."/>
+
+    <@lib.property
+        name="processDefinitionId"
         type="string"
-        description="Filter by the process definition the instances run on."/>,
-    <@lib.property name="processDefinitionKey"
+        description="Filter by the process definition the instances run on."/>
+
+    <@lib.property
+        name="processDefinitionKey"
         type="string"
-        description="Filter by the key of the process definition the instances run on."/>,
+        description="Filter by the key of the process definition the instances run on."/>
+
 <#--     "deploymentId": {
       "type": "string",
       "description": "Filter by the deployment the id belongs to."

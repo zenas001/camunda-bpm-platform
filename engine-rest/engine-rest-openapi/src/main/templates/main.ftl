@@ -19,7 +19,9 @@
     {"name": "Deployment"}
   ],
   "paths": {
+
     <#include "/paths/process-instance/all.ftl">,
+
     <#include "/paths/deployment/all.ftl">
     <#-- TODO -->
   },
@@ -33,7 +35,6 @@
       "DecisionDefinitionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/DecisionDefinitionDto.ftl">,
       "DecisionRequirementsDefinitionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/DecisionRequirementsDefinitionDto.ftl">,
       "ProcessDefinitionDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/ProcessDefinitionDto.ftl">,
-
 
       "BatchDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/batch/BatchDto.ftl">,
       "DeleteProcessInstancesDto": <#include "/models/org/camunda/bpm/engine/rest/dto/runtime/batch/DeleteProcessInstancesDto.ftl">,
