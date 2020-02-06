@@ -5,47 +5,36 @@
     "Process instance"
   ],
   "parameters": [
-    {
-      "name": "id",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The id of the process instance to set the variable for."
-    },
-    {
-      "name": "varName",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The name of the variable to set."
-    }
+
+    <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        description = "The id of the process instance to set the variable for." />
+
+    <@lib.parameter
+        name = "varName"
+        location = "path"
+        type = "string"
+        required = true
+        description = "The name of the variable to set." />
+
   ],
-          "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/VariableValueDto"
-              }
-            }
-          }
-        },
+
+  <@lib.requestBody
+      dto = "VariableValueDto" />
+
   "responses": {
-    "204": {
-      "description": "Request successful."
-    },
-    "400": {
-      "description": "Bad Request\nThe variable value or type is invalid, for example if the value could not be parsed to an Integer value or the passed variable type is not supported. ",
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/ExceptionDto"
-          }
-        }
-      }
-    }
+
+    <@lib.response
+        code = "204"
+        desc = "Request successful."/>
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        last = true
+        desc = "Bad Request\n\n The variable value or type is invalid, for example if the value could not be parsed to an Integer value or the passed variable type is not supported."/>
   }
 }

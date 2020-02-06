@@ -27,25 +27,18 @@
    "description": "Please note that if both processInstances and processInstanceQuery are provided, then the resulting execution will be performed on the union of these sets."
   },
   "responses" : {
-     "200": {
-       "description": "Request successful.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/BatchDto"
-           }
-         }
-       }
-     },
-     "400": {
-       "description": "Returned if some of the query parameters are invalid, for example if neither processInstanceIds, nor historicProcessInstanceQuery is present. Or if the retry count is not specified. ",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     }
-   }
+
+    <@lib.response
+        code = "200"
+        dto = "BatchDto"
+        desc = "Request successful."/>
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        last = true
+        desc = "Bad Request
+        Returned if some of the query parameters are invalid, for example if neither processInstanceIds, nor historicProcessInstanceQuery is present. Or if the retry count is not specified."/>
+
+  }
 }

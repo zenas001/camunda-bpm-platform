@@ -5,28 +5,26 @@
     "Process instance"
   ],
   "parameters": [
-    {
-      "name": "id",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The id of the process instance to retrieve the variable for."
-    },
-    {
-      "name": "varName",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The name of the variable to retrieve."
-    }
+
+    <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        description = "The id of the process instance to retrieve the variable for."/>
+
+    <@lib.parameter
+        name = "varName"
+        location = "path"
+        type = "string"
+        required = true
+        last = true
+        description = "The name of the variable to retrieve."/>
+
   ],
   "responses": {
     "200": {
-      "description": "Request successful.\nFor binary variables or files without any MIME type information, a byte stream is returned. File variables with MIME type information are returned as the saved type. Additionally, for file variables the Content-Disposition header will be set.",
+      "description": "Request successful.\n\nFor binary variables or files without any MIME type information, a byte stream is returned. File variables with MIME type information are returned as the saved type. Additionally, for file variables the Content-Disposition header will be set.",
       "content": {
         "application/octet-stream": {
           "schema": {
@@ -40,25 +38,17 @@
         }
       }
     },
-    "400": {
-      "description": "Bad Request\nA Process Variable with the given id exists but does not serialize as binary data.",
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/ExceptionDto"
-          }
-        }
-      }
-    },
-    "404": {
-      "description": "Not Found",
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/ExceptionDto"
-          }
-        }
-      }
-    }
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        desc = "Bad Request\n\nA Process Variable with the given id exists but does not serialize as binary data."/>
+
+    <@lib.response
+        code = "404"
+        dto = "ExceptionDto"
+        last = true
+        desc = "Not Found\n\nA Process Variable with the given id does not exist. "/>
+
   }
 }

@@ -5,7 +5,7 @@
     "Process instance"
   ],
   "parameters": [
-    <#include "/paths/process-instance/process-instance-query-params.ftl">
+    <#include "/paths/commons/process-instance-query-params.ftl">
   ],
   "responses": {
     <@lib.response
@@ -16,7 +16,7 @@
     <@lib.response
         code="400"
         dto="ExceptionDto"
-        last=true
+        last =true
         desc="Bad Request
 Returned if some of the query parameters are invalid, for example an invalid operator for variable comparison is used."/>
   }

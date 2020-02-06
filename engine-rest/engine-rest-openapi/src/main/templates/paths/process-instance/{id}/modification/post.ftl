@@ -4,47 +4,35 @@
   "tags": [
     "Process instance"
   ],
-  "parameters" : [ {
-    "name" : "id",
-    "in" : "path",
-    "required" : true,
-    "schema" : {
-      "type" : "string"
-    },
-    "description": "The id of the process instance to modify."
-  } ],
-  "requestBody" : {
-    "content" : {
-      "application/json" : {
-        "schema" : {
-          "$ref" : "#/components/schemas/ProcessInstanceModificationDto"
-        }
-      }
-    }
-  },
+  "parameters" : [ 
+      <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        last = true
+        description = "The id of the process instance to modify."/>
+  ],
+
+  <@lib.requestBody
+      dto = "ProcessInstanceModificationDto" />
+
   "responses" : {
-     "204": {
-       "description": "Request successful."
-     },
-     "400": {
-       "description": "At least one modification instruction misses required parameters.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     },
-     "500": {
-       "description": "The modification cannot be performed, for example because it starts a failing activity.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     }
+
+    <@lib.response
+        code = "204"
+        desc = "Request successful." />
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        desc = "At least one modification instruction misses required parameters."/>
+
+    <@lib.response
+        code = "500"
+        dto = "ExceptionDto"
+        last = true
+        desc = "The modification cannot be performed, for example because it starts a failing activity."/>
+
    }
 }

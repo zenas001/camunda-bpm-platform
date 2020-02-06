@@ -27,7 +27,6 @@
   },
   "components": {
     "schemas": {
-      <#-- TODO resolve by traverse of models dir? -->
       "HistoricProcessInstanceQueryDto": <#include "/models/org/camunda/bpm/engine/rest/dto/history/HistoricProcessInstanceQueryDto.ftl">,
 
       "DeploymentDto": <#include "/models/org/camunda/bpm/engine/rest/dto/repository/DeploymentDto.ftl">,

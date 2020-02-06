@@ -5,32 +5,15 @@
     "Process instance"
   ],
   "parameters" : [ 
-    <#include "/paths/process-instance/process-instance-query-params.ftl">,
 
-    <@lib.parameter
-        name="sortBy"
-        location="query"
-        type="string"
-        description="Sort the results lexicographically by a given criterion. Valid values are instanceId, definitionKey, definitionId, tenantId and businessKey. Must be used in conjunction with the sortOrder parameter."/>
+    <#assign sortByValues = ['"instanceId"', '"definitionKey"', '"definitionId"', '"tenantId"', '"businessKey"']>
+    <#include "/paths/commons/sort-params.ftl" >
 
-    <@lib.parameter
-        name="sortOrder"
-        location="query"
-        type="string"
-        description="Sort the results in a given order. Values may be asc for ascending order or desc for descending order. Must be used in conjunction with the sortBy parameter."/>
+    <#include "/paths/commons/pagination-params.ftl" >
 
-    <@lib.parameter
-        name="firstResult"
-        location="query"
-        type="integer"
-        description="Pagination of results. Specifies the index of the first result to return."/>
+    <#assign last = true >
+    <#include "/paths/commons/process-instance-query-params.ftl" >
 
-    <@lib.parameter
-        name="maxResults"
-        location="query"
-        last=true
-        type="integer"
-        description="Pagination of results. Specifies the maximum number of results to return. Will return less results if there are no more results left."/>
   ],
   "responses" : {
     <@lib.response
@@ -42,32 +25,7 @@
     <@lib.response
         code="400"
         dto="ExceptionDto"
-        last=true
-        desc="Bad Request\n*Returned if some of the query parameters are invalid, for example if a sortOrder parameter is supplied, but no sortBy, or if an invalid operator for variable comparison is used."/>
-    <#--
-    "200" : {
-      "description" : "Request successful.",
-      "content" : {
-        "application/json" : {
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/ProcessInstanceDto"
-            }
-          }
-        }
-      }
-    },
-    "400": {
-      "description": "Bad Request\n*Returned if some of the query parameters are invalid, for example if a sortOrder parameter is supplied, but no sortBy, or if an invalid operator for variable comparison is used.",
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/ExceptionDto"
-          }
-        }
-      }
-    }
-    -->
+        last =true
+        desc="Bad Request\n\nReturned if some of the query parameters are invalid, for example if a sortOrder parameter is supplied, but no sortBy, or if an invalid operator for variable comparison is used."/>
   }
 }

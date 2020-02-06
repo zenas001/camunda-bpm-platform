@@ -4,64 +4,41 @@
   "tags": [
     "Process instance"
   ],
-  "parameters" : [ {
-    "name" : "id",
-    "in" : "path",
-    "required" : true,
-    "schema" : {
-      "type" : "string"
-    },
-    "description": "The id of the process instance to modify."
-  } ],
-  "requestBody" : {
-    "content" : {
-      "application/json" : {
-        "schema" : {
-          "$ref" : "#/components/schemas/ProcessInstanceModificationDto"
-        }
-      }
-    }
-  },
+  "parameters" : [
+    <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        last = true
+        description = "The id of the process instance to modify."/>
+  ],
+
+  <@lib.requestBody
+      dto = "ProcessInstanceModificationDto" />
+
   "responses" : {
-     "200": {
-       "description": "Request successful.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/BatchDto"
-           }
-         }
-       }
-     },
-     "400": {
-       "description": "At least one modification instruction misses required parameters.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     },
-     "403": {
-       "description": "If the user is not allowed to execute batches. See the Introduction for the error response format.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     },
-     "500": {
-       "description": "The modification cannot be performed, for example because it starts a failing activity.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     }
+
+    <@lib.response
+        code = "200"
+        dto = "BatchDto"
+        desc = "Request successful."/>
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        desc = "Bad Request\n\nAt least one modification instruction misses required parameters."/>
+
+    <@lib.response
+        code = "403"
+        dto = "ExceptionDto"
+        desc = "Forbidden\n\nIf the user is not allowed to execute batches. See the Introduction for the error response format."/>
+
+    <@lib.response
+        code = "500"
+        dto = "ExceptionDto"
+        last = true
+        desc = "The modification cannot be performed, for example because it starts a failing activity."/>
+
    }
 }

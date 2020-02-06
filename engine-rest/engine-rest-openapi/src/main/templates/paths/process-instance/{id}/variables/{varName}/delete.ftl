@@ -5,28 +5,29 @@
     "Process instance"
   ],
   "parameters": [
-    {
-      "name": "id",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The id of the process instance to delete the variable from."
-    },
-    {
-      "name": "varName",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The name of the variable to delete."
-    }
+
+    <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        description = "The id of the process instance to delete the variable from."/>
+
+    <@lib.parameter
+        name = "varName"
+        location = "path"
+        type = "string"
+        required = true
+        last = true
+        description = "The name of the variable to delete."/>
+
   ],
   "responses": {
-    "204": {
-      "description": "Request successful."
-    }
+
+    <@lib.response
+        code = "204"
+        last = true
+        desc = "Request successful."/>
+
   }
 }

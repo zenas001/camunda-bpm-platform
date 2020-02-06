@@ -26,25 +26,18 @@
     }
   },
   "responses": {
-     "200": {
-       "description": "Request successful.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/BatchDto"
-           }
-         }
-       }
-     },
-     "400": {
-       "description": "Bad Request\n* Returned if some of the query parameters are invalid, i.e., neither processInstanceIds, nor processInstanceQuery is present",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     }
+
+    <@lib.response
+        code = "200"
+        dto = "BatchDto"
+        desc = "Request successful."/>
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        last = true
+        desc = "Bad Request
+        Returned if some of the query parameters are invalid, i.e., neither processInstanceIds, nor processInstanceQuery is present"/>
+
   }
 }

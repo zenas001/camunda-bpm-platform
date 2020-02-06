@@ -52,7 +52,7 @@
         name="incidents"
         type="array"
         itemType='"$ref": "#/components/schemas/ActivityInstanceIncidentDto"'
-        last=true
+        last =true
         description="A list of JSON objects containing incident specific properties:
 * id: the id of the incident
 * activityId: the activity id in which the incident occurred"/>

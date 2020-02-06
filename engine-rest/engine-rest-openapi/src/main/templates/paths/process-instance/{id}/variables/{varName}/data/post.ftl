@@ -5,24 +5,22 @@
     "Process instance"
   ],
   "parameters": [
-    {
-      "name": "id",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The id of the process instance to retrieve the variable for."
-    },
-    {
-      "name": "varName",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The name of the variable to retrieve."
-    }
+
+    <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        description = "The id of the process instance to retrieve the variable for."/>
+
+    <@lib.parameter
+        name = "varName"
+        location = "path"
+        type = "string"
+        required = true
+        last = true
+        description = "The name of the variable to retrieve."/>
+
   ],
   "requestBody" : {
     "description": "For binary variables a multipart form submit with the following parts:",
@@ -31,20 +29,23 @@
           "schema": {
             "type": "object",
             "properties": {
-              "data": {
-                "type": "string",
-                "format": "binary",
-                "description": "The binary data to be set.\n\nFor File variables, this multipart can contain the filename, binary value and MIME type of the file variable to be set. Only the filename is mandatory."
-              },
-              "valueType": {
-                "type": "string",
-                "enum": [
-                  "Bytes",
-                  "File"
-                ],
-                "description": "The name of the variable type. Either Bytes for a byte array variable or File for a file variable."
-              }
-              <#-- ,
+
+              <@lib.property
+                name = "data"
+                type = "string"
+                format = "binary"
+                description = "The binary data to be set.\n\nFor File variables, this multipart can contain the filename, binary value and MIME type of the file variable to be set. Only the filename is mandatory." />
+
+              <@lib.property
+                name = "valueType"
+                type = "string"
+                enum = true
+                enumValues = ['"Bytes"', '"File"']
+                last = true
+                description = "The name of the variable type. Either Bytes for a byte array variable or File for a file variable." />
+
+              <#-- TODO deprecated properties, the problem is that the property id must be unique and here data is repeating
+                ,
               "type": {
                 "type": "string",
                 "deprecated": true,
@@ -61,18 +62,16 @@
     }
   },
   "responses": {
-    "204": {
-      "description": "Request successful."
-    },
-    "400": {
-      "description": "Bad Request\nThe variable value or type is invalid, for example if no filename is set.",
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/ExceptionDto"
-          }
-        }
-      }
-    }
+
+    <@lib.response
+        code = "204"
+        desc = "Request successful."/>
+
+    <@lib.response
+        code = "400"
+        dto = "ExceptionDto"
+        last = true
+        desc = "Bad Request\n\nThe variable value or type is invalid, for example if no filename is set."/>
+
   }
 }

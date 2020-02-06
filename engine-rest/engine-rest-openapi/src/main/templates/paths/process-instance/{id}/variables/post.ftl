@@ -5,48 +5,36 @@
     "Process instance"
   ],
   "parameters": [
-    {
-      "name": "id",
-      "in": "path",
-      "required": true,
-      "schema": {
-        "type": "string"
-      },
-      "description": "The id of the process instance to set variables for."
-    }
+
+    <@lib.parameter
+        name="id"
+        location="path"
+        type="string"
+        required=true
+        last =true
+        description="The id of the process instance to set variables for."/>
+
   ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/PatchVariablesDto"
-              }
-            }
-          }
-        },
+
+  <@lib.requestBody
+      dto="PatchVariablesDto" />
+
   "responses": {
-     "204": {
-       "description": "Request successful."
-     },
-     "400": {
-       "description": "The variable value or type is invalid, for example if the value could not be parsed to an Integer value or the passed variable type is not supported.",
-       "content": {
-         "application/json": {
-           "schema": {
-             "$ref": "#/components/schemas/ExceptionDto"
-           }
-         }
-       }
-     },
-    "500": {
-      "description": "Bad Request\nUpdate or delete could not be executed, for example because the process instance does not exist.",
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/ExceptionDto"
-          }
-        }
-      }
-    }
+
+    <@lib.response
+        code="204"
+        desc="Request successful." />
+
+    <@lib.response
+        code="400"
+        dto="ExceptionDto"
+        desc="Bad Request\n\nThe variable value or type is invalid, for example if the value could not be parsed to an Integer value or the passed variable type is not supported."/>
+
+    <@lib.response
+        code="500"
+        dto="ExceptionDto"
+        last =true
+        desc="Update or delete could not be executed, for example because the process instance does not exist."/>
+
   }
 }

@@ -4,32 +4,38 @@
   "tags": [
     "Process instance"
   ],
-  "parameters" : [ {
-    "name" : "id",
-    "in" : "path",
-    "required" : true,
-    "schema" : {
-      "type" : "string"
-    },
-    "description": "The id of the process instance to activate or suspend."
-  } ],
+  "parameters" : [ 
+      <@lib.parameter
+        name = "id"
+        location = "path"
+        type = "string"
+        required = true
+        last = true
+        description = "The id of the process instance to activate or suspend."/>
+  ],
   "requestBody" : {
     "content" : {
       "application/json" : {
         "schema" : {
           "properties": {
-            "suspended": {
-              "type": "boolean",
-              "description": "A Boolean value which indicates whether to activate or suspend a given process instance. When the value is set to true, the given process instance will be suspended and when the value is set to false, the given process instance will be activated."
-            }
+
+            <@lib.property
+                name = "suspended"
+                type = "boolean"
+                last = true
+                description = "A Boolean value which indicates whether to activate or suspend a given process instance. When the value is set to true, the given process instance will be suspended and when the value is set to false, the given process instance will be activated." />
+
           }
         }
       }
     }
   },
   "responses" : {
-     "204": {
-       "description": "Request successful."
-     }
-   }
+
+    <@lib.response
+        code = "204"
+        last = true
+        desc = "Request successful." />
+
+      }
 }

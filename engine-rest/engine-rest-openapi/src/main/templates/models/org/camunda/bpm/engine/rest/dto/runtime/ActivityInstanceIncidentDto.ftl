@@ -9,7 +9,7 @@
 
     <@lib.property name="parentActivityInstanceId"
         type="string"
-        last=true
+        last =true
         description="The activity id in which the incident happened."/>
   }
 }
