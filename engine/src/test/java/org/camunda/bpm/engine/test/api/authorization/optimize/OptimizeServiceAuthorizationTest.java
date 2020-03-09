@@ -54,8 +54,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
-
 import static org.camunda.bpm.engine.authorization.Authorization.ANY;
 import static org.camunda.bpm.engine.authorization.Permissions.ALL;
 import static org.camunda.bpm.engine.authorization.Permissions.READ;
@@ -334,50 +332,49 @@ public class OptimizeServiceAuthorizationTest {
   }
 
   private void generateTestData() {
+    engineRule.getProcessEngineConfiguration().setAuthorizationEnabled(false);
+
     // completed activity/task/process instance data
     final ProcessDefinition process = selectProcessDefinitionByKey("process");
-    runWithoutAuthorization(() -> runtimeService.startProcessInstanceById(
+    runtimeService.startProcessInstanceById(
       process.getId(),
       // variable update data
       Variables.createVariables()
         .putValue("foo", "bar")
-    ));
+    );
     // running activity/task/process instance data
     final ProcessDefinition process2 = selectProcessDefinitionByKey("userTaskProcess");
-    runWithoutAuthorization(() -> runtimeService.startProcessInstanceById(process2.getId()));
+    runtimeService.startProcessInstanceById(process2.getId());
     // identity link log, operations log data
     completeAllUserTasks();
     // decision instance data
     final DecisionDefinition decision = selectDecisionDefinitionByKey();
-    runWithoutAuthorization(() -> decisionService.evaluateDecisionById(decision.getId())
-      .variables(Variables.createVariables().putValue("input1", "a")).evaluate());
+    decisionService.evaluateDecisionById(decision.getId())
+      .variables(Variables.createVariables().putValue("input1", "a")).evaluate();
+
+    engineRule.getProcessEngineConfiguration().setAuthorizationEnabled(true);
   }
 
   private void completeAllUserTasks() {
-    runWithoutAuthorization(
-      () -> {
-        List<Task> list = taskService.createTaskQuery().list();
-        for (Task task : list) {
-          taskService.claim(task.getId(), userId);
-          taskService.complete(task.getId());
-        }
-        return null;
+      List<Task> list = taskService.createTaskQuery().list();
+      for (Task task : list) {
+        taskService.claim(task.getId(), userId);
+        taskService.complete(task.getId());
       }
-    );
   }
 
   protected ProcessDefinition selectProcessDefinitionByKey(final String processDefinitionKey) {
-    return runWithoutAuthorization(() -> repositoryService
+    return  repositoryService
       .createProcessDefinitionQuery()
       .processDefinitionKey(processDefinitionKey)
-      .singleResult());
+      .singleResult();
   }
 
   protected DecisionDefinition selectDecisionDefinitionByKey() {
-    return runWithoutAuthorization(() -> repositoryService
+    return repositoryService
       .createDecisionDefinitionQuery()
       .decisionDefinitionKey(TEST_DECISION)
-      .singleResult());
+      .singleResult();
   }
 
   private void deployTestData() {
@@ -403,21 +400,6 @@ public class OptimizeServiceAuthorizationTest {
     testRule.deploy(deploymentBuilder);
   }
 
-  protected <T> T runWithoutAuthorization(Callable<T> runnable) {
-    boolean authorizationEnabled = engineRule.getProcessEngineConfiguration().isAuthorizationEnabled();
-    try {
-      engineRule.getProcessEngineConfiguration().setAuthorizationEnabled(false);
-      return runnable.call();
-    } catch (RuntimeException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    } finally {
-      if (authorizationEnabled) {
-        engineRule.getProcessEngineConfiguration().setAuthorizationEnabled(true);
-      }
-    }
-  }
 
   /**
    * This class is just there to support code that's below java 8. Once
