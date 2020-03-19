@@ -29,7 +29,6 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineServices;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.impl.ProcessEngineLogger;
-import org.camunda.bpm.engine.impl.bpmn.behavior.NoneStartEventActivityBehavior;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -822,6 +821,10 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
     }
   }
 
+  public ExecutionEntity getProcessInstanceExecution() {
+    return processInstance;
+  }
+
   @Override
   public void setProcessInstance(PvmExecutionImpl processInstance) {
     this.processInstance = (ExecutionEntity) processInstance;
@@ -1261,48 +1264,9 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
     return Context.getCommandContext().getVariableInstanceManager().findVariableInstancesByExecutionId(id);
   }
 
+  @Override
   public Collection<VariableInstanceEntity> provideVariables(Collection<String> variableNames) {
     return Context.getCommandContext().getVariableInstanceManager().findVariableInstancesByExecutionIdAndVariableNames(id, variableNames);
-  }
-
-  protected boolean isAutoFireHistoryEvents() {
-    // as long as the process instance is starting (i.e. before activity instance
-    // of the selected initial (start event) is created), the variable scope should
-    // not automatic fire history events for variable updates.
-
-    // firing the events is triggered by the processInstanceStart context after
-    // the initial activity has been initialized. The effect is that the activity instance id of the
-    // historic variable instances will be the activity instance id of the start event.
-
-    // if a variable is updated while the process instance is starting then the
-    // update history event is lost and the updated value is handled as initial value.
-
-    ActivityImpl currentActivity = getActivity();
-
-    return (startContext == null || !startContext.isDelayFireHistoricVariableEvents())
-      && (currentActivity == null || isActivityNoStartEvent(currentActivity)
-      || isStartEventInValidStateOrNotAsync(currentActivity));
-  }
-
-  protected boolean isActivityNoStartEvent(ActivityImpl currentActivity) {
-    return !(currentActivity.getActivityBehavior() instanceof NoneStartEventActivityBehavior);
-  }
-
-  protected boolean isStartEventInValidStateOrNotAsync(ActivityImpl currentActivity) {
-    return getActivityInstanceState() != ActivityInstanceState.DEFAULT.getStateCode()
-      || !currentActivity.isAsyncBefore();
-  }
-
-  public void fireHistoricVariableInstanceCreateEvents() {
-    // this method is called by the start context and batch-fires create events
-    // for all variable instances
-    List<VariableInstanceEntity> variableInstances = variableStore.getVariables();
-    VariableInstanceHistoryListener historyListener = new VariableInstanceHistoryListener();
-    if (variableInstances != null) {
-      for (VariableInstanceEntity variable : variableInstances) {
-        historyListener.onCreate(variable, this);
-      }
-    }
   }
 
   /**
@@ -1706,9 +1670,7 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
     listeners.add((VariableInstanceLifecycleListener) new VariableInstanceConcurrentLocalInitializer(this));
     listeners.add((VariableInstanceLifecycleListener) VariableInstanceSequenceCounterListener.INSTANCE);
 
-    if (isAutoFireHistoryEvents()) {
-      listeners.add((VariableInstanceLifecycleListener) VariableInstanceHistoryListener.INSTANCE);
-    }
+    listeners.add((VariableInstanceLifecycleListener) VariableInstanceHistoryListener.INSTANCE);
 
     listeners.add((VariableInstanceLifecycleListener) new VariableListenerInvocationListener(this));
 

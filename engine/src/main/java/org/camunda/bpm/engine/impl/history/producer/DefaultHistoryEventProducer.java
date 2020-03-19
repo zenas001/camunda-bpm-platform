@@ -429,6 +429,7 @@ public class DefaultHistoryEventProducer implements HistoryEventProducer {
     CaseExecutionEntity sourceCaseExecution = null;
     if (sourceVariableScope instanceof ExecutionEntity) {
       sourceExecution = (ExecutionEntity) sourceVariableScope;
+
       sourceActivityInstanceId = sourceExecution.getActivityInstanceId();
 
     } else if (sourceVariableScope instanceof TaskEntity) {
@@ -460,6 +461,20 @@ public class DefaultHistoryEventProducer implements HistoryEventProducer {
 
     // set source activity instance id
     evt.setActivityInstanceId(sourceActivityInstanceId);
+
+    // mark initial variables on process start
+    if (sourceExecution != null && sourceExecution.getProcessInstanceExecution() != null
+        && sourceExecution.getProcessInstanceExecution().getExecutionStartContext() != null
+        && HistoryEventTypes.VARIABLE_INSTANCE_CREATE.equals(eventType)) {
+
+      evt.setInitial(true);
+
+      sourceActivityInstanceId = sourceExecution.getActivityInstanceId();
+      if (sourceActivityInstanceId == null && sourceExecution.getActivity() != null && sourceExecution.getTransition() == null) {
+        evt.setActivityInstanceId(sourceExecution.getProcessInstanceId());
+      }
+    }
+
 
     return evt;
   }
