@@ -22,11 +22,10 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
-import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.qa.upgrade.DescribesScenario;
 import org.camunda.bpm.qa.upgrade.ScenarioSetup;
 
-public class RestartProcessIntanceWithInitialVariablesScenario {
+public class RestartProcessIntanceWithInitialVariablesScenario2 {
 
   @Deployment
   public static String deploy() {
@@ -39,25 +38,12 @@ public class RestartProcessIntanceWithInitialVariablesScenario {
       @Override
       public void execute(ProcessEngine engine, String scenarioName) {
         RuntimeService runtimeService = engine.getRuntimeService();
+        ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery().processDefinitionKey("asyncBeforeStartProcess")
+            .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess").singleResult();
 
-        String businessKey = "712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess";
-        ProcessInstance processInstanceWithInitialVariables = runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess", businessKey,
-            Variables.createVariables()
-                .putValue("var1", "value1"));
-
-//        ((ProcessEngineConfigurationImpl) engine.getProcessEngineConfiguration())
-//        .getCommandExecutorTxRequired()
-//        .execute(new Command<Void>() {
-//
-//          @Override
-//          public Void execute(CommandContext commandContext) {
-//
-//            commandContext.getProcessEngineConfiguration().getRuntimeService().setVariable(processInstanceWithInitialVariables.getId(), "var1", "value2");
-//            commandContext.getProcessEngineConfiguration().getRuntimeService().setVariableLocal(processInstanceWithInitialVariables.getId(), "local1", "foo1");
-//
-//            return null;
-//          }
-//        });
+        runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "var1", "value2");
+        runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "var2", "value1");
+        runtimeService.setVariableLocal(processInstanceWithInitialVariables.getId(), "local1", "foo1");
 
         ManagementService managementService = engine.getManagementService();
         Job firstJob = managementService.createJobQuery().processDefinitionKey("asyncBeforeStartProcess").singleResult();
@@ -66,11 +52,11 @@ public class RestartProcessIntanceWithInitialVariablesScenario {
         } catch (Exception e) {
           // ignore
         }
-        businessKey = "7120_ProcessIntance_asyncBeforeStartProcess";
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess", businessKey,
-            Variables.createVariables()
-            .putValue("var1", "value1"));
-//        
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processDefinitionKey("asyncBeforeStartProcess")
+            .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess").singleResult();
+        runtimeService.setVariable(processInstance.getId(), "var1", "value2");
+        runtimeService.setVariable(processInstance.getId(), "var2", "value1");
+        runtimeService.setVariableLocal(processInstance.getId(), "local2", "foo1");
       }
     };
   }

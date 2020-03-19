@@ -22,7 +22,9 @@ import static org.junit.Assert.assertNotNull;
 import java.text.ParseException;
 import java.util.List;
 
+import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.VariableInstance;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
@@ -45,7 +47,7 @@ public class RestartProcessIntanceWithInitialVariablesTest {
   @Test
   public void shouldRestartWithInitialVariables() throws ParseException {
     ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("ProcessIntanceWithInitialVariables")
+        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
         .singleResult();
     assertNotNull(processInstanceWithInitialVariables);
 
@@ -58,24 +60,37 @@ public class RestartProcessIntanceWithInitialVariablesTest {
       .execute();
 
     ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("ProcessIntanceWithInitialVariables")
+        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
         .active()
         .singleResult();
 
     // then
     restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("ProcessIntanceWithInitialVariables")
+        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
         .active()
         .singleResult();
     List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
     assertEquals(1, variables.size());
     assertEquals("var1", variables.get(0).getName());
     assertEquals("value1", variables.get(0).getValue());
-//    restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-//        .processInstanceBusinessKey("ProcessIntance")
-//        .active()
-//        .singleResult();
-//    variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
-//    assertEquals(0, variables.size());
+ 
+  }
+  @Test
+  public void shouldRestartWithInitialVariables2() throws ParseException {
+    ManagementService managementService = engineRule.getManagementService();
+    Job firstJob = managementService.createJobQuery().processDefinitionKey("asyncBeforeStartProcess").singleResult();
+    try {
+      managementService.executeJob(firstJob.getId());
+    } catch (Exception e) {
+      // ignore
+    }
+   ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
+        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
+        .active()
+        .singleResult();
+   List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
+   assertEquals(1, variables.size());
+   assertEquals("var1", variables.get(0).getName());
+   assertEquals("value1", variables.get(0).getValue());
   }
 }

@@ -21,6 +21,7 @@ import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.qa.upgrade.customretries.FailingIntermediateBoundaryTimerJobScenario;
 import org.camunda.bpm.qa.upgrade.restart.RestartProcessIntanceWithInitialVariablesScenario;
+import org.camunda.bpm.qa.upgrade.restart.RestartProcessIntanceWithInitialVariablesScenario2;
 
 /**
  * @author Nikola Koevski
@@ -42,6 +43,7 @@ public class TestFixture {
 
     runner.setupScenarios(FailingIntermediateBoundaryTimerJobScenario.class);
     runner.setupScenarios(RestartProcessIntanceWithInitialVariablesScenario.class);
+    runner.setupScenarios(RestartProcessIntanceWithInitialVariablesScenario2.class);
 
     processEngine.close();
   }
