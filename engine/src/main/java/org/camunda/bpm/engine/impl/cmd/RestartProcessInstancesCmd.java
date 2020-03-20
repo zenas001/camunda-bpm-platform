@@ -203,11 +203,11 @@ public class RestartProcessInstancesCmd extends AbstractRestartProcessInstanceCm
         .executionId(processInstance.getId())
         .initial();
 
-    List<HistoricDetail> details = query
+    List<HistoricDetail> historicDetails = query
         .sequenceCounter(1)
         .list();
 
-    if (details.size() == 0) {
+    if (historicDetails.size() == 0) {
       HistoricActivityInstance startActivityInstance = resolveStartActivityInstance(processInstance);
 
       if (startActivityInstance != null) {
@@ -215,14 +215,14 @@ public class RestartProcessInstancesCmd extends AbstractRestartProcessInstanceCm
                 .variableUpdates()
                 .activityInstanceId(startActivityInstance.getId())
                 .executionId(processInstance.getId());
-        details.addAll(queryWithStartActivities
+        historicDetails = queryWithStartActivities
                .sequenceCounter(1)
-               .list());
+               .list();
       }
     }
 
     VariableMap variables = new VariableMapImpl();
-    for (HistoricDetail detail : details) {
+    for (HistoricDetail detail : historicDetails) {
       HistoricVariableUpdate variableUpdate = (HistoricVariableUpdate) detail;
       variables.putValueTyped(variableUpdate.getVariableName(), variableUpdate.getTypedValue());
     }

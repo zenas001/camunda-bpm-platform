@@ -284,16 +284,17 @@ public class ProcessInstanceModificationHistoryTest extends PluggableProcessEngi
 
   @Deployment(resources = {"org/camunda/bpm/engine/test/history/oneAsyncTaskProcess.bpmn20.xml"})
   public void testHistoricVariables() {
+    // given
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess", Variables.createVariables().putValue("foo", "bar"));
 
     executeJob(managementService.createJobQuery().singleResult());
 
-    // when TODO
+    // when
     runtimeService.createProcessInstanceModification(processInstance.getId())
       .startBeforeActivity("theStart")
       .execute(true, true);
 
-    // then TODO
+    // then
     HistoricVariableInstance variable = historyService.createHistoricVariableInstanceQuery().singleResult();
     assertNotNull(variable);
     assertEquals(processInstance.getId(), variable.getProcessInstanceId());
