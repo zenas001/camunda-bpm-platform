@@ -45,9 +45,10 @@ public class RestartProcessIntanceWithInitialVariablesTest {
   }
 
   @Test
-  public void shouldRestartWithInitialVariables() throws ParseException {
+  public void shouldRestartWithInitialVariablesJobExecutedIn712() throws ParseException {
+    String businessKey = "712_ProcessIntanceExecuted";
     ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
+        .processInstanceBusinessKey(businessKey)
         .singleResult();
     assertNotNull(processInstanceWithInitialVariables);
 
@@ -60,13 +61,13 @@ public class RestartProcessIntanceWithInitialVariablesTest {
       .execute();
 
     ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
+        .processInstanceBusinessKey(businessKey)
         .active()
         .singleResult();
 
     // then
     restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
+        .processInstanceBusinessKey(businessKey)
         .active()
         .singleResult();
     List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
@@ -75,22 +76,41 @@ public class RestartProcessIntanceWithInitialVariablesTest {
     assertEquals("value1", variables.get(0).getValue());
  
   }
+
   @Test
-  public void shouldRestartWithInitialVariables2() throws ParseException {
+  public void shouldRestartWithInitialVariablesJobExecutedIn713() throws ParseException {
     ManagementService managementService = engineRule.getManagementService();
-    Job firstJob = managementService.createJobQuery().processDefinitionKey("asyncBeforeStartProcess").singleResult();
+    Job asyncJob = managementService.createJobQuery()
+        .processDefinitionKey("asyncBeforeStartProcess_712").singleResult();
     try {
-      managementService.executeJob(firstJob.getId());
+      managementService.executeJob(asyncJob.getId());
     } catch (Exception e) {
       // ignore
     }
-   ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey("712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess")
+
+    String businessKey = "7120_ProcessIntanceWithoutExecute";
+    ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery()
+        .processInstanceBusinessKey(businessKey)
         .active()
         .singleResult();
+
+    runtimeService.deleteProcessInstance(processInstanceWithInitialVariables.getId(), "test");
+    // when
+    runtimeService.restartProcessInstances(processInstanceWithInitialVariables.getProcessDefinitionId())
+      .startBeforeActivity("theTask")
+      .processInstanceIds(processInstanceWithInitialVariables.getId())
+      .initialSetOfVariables()
+      .execute();
+
+    ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
+        .processInstanceBusinessKey(businessKey)
+        .active()
+        .singleResult();
+
+
    List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
    assertEquals(1, variables.size());
-   assertEquals("var1", variables.get(0).getName());
+   assertEquals("var3", variables.get(0).getName());
    assertEquals("value1", variables.get(0).getValue());
   }
 }

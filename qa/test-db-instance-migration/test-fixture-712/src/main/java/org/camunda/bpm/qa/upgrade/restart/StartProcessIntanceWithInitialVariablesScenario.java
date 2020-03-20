@@ -20,57 +20,44 @@ import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Job;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.qa.upgrade.DescribesScenario;
 import org.camunda.bpm.qa.upgrade.ScenarioSetup;
 
-public class RestartProcessIntanceWithInitialVariablesScenario {
+public class StartProcessIntanceWithInitialVariablesScenario {
 
   @Deployment
   public static String deploy() {
     return "org/camunda/bpm/qa/upgrade/async/oneAsyncTaskProcess.bpmn20.xml";
   }
 
-  @DescribesScenario("restartProcessIntanceWithInitialVariablesScenario")
+  @DescribesScenario("startProcessIntanceWithInitialVariablesScenario")
   public static ScenarioSetup createUserOperationLogEntries() {
     return new ScenarioSetup() {
       @Override
       public void execute(ProcessEngine engine, String scenarioName) {
         RuntimeService runtimeService = engine.getRuntimeService();
 
-        String businessKey = "712_ProcessIntanceWithInitialVariables_asyncBeforeStartProcess";
-        ProcessInstance processInstanceWithInitialVariables = runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess", businessKey,
+        String businessKey = "712_ProcessIntanceExecuted";
+        runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess_712", businessKey,
             Variables.createVariables()
                 .putValue("var1", "value1"));
 
-//        ((ProcessEngineConfigurationImpl) engine.getProcessEngineConfiguration())
-//        .getCommandExecutorTxRequired()
-//        .execute(new Command<Void>() {
-//
-//          @Override
-//          public Void execute(CommandContext commandContext) {
-//
-//            commandContext.getProcessEngineConfiguration().getRuntimeService().setVariable(processInstanceWithInitialVariables.getId(), "var1", "value2");
-//            commandContext.getProcessEngineConfiguration().getRuntimeService().setVariableLocal(processInstanceWithInitialVariables.getId(), "local1", "foo1");
-//
-//            return null;
-//          }
-//        });
 
         ManagementService managementService = engine.getManagementService();
-        Job firstJob = managementService.createJobQuery().processDefinitionKey("asyncBeforeStartProcess").singleResult();
+        Job firstJob = managementService.createJobQuery()
+            .processDefinitionKey("asyncBeforeStartProcess_712").singleResult();
         try {
           managementService.executeJob(firstJob.getId());
         } catch (Exception e) {
           // ignore
         }
-        businessKey = "7120_ProcessIntance_asyncBeforeStartProcess";
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess", businessKey,
+
+        businessKey = "7120_ProcessIntanceWithoutExecute";
+        runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess_712", businessKey,
             Variables.createVariables()
-            .putValue("var1", "value1"));
-//        
+            .putValue("var3", "value1"));
       }
     };
   }

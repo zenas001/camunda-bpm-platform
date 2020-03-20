@@ -210,7 +210,6 @@ public class RestartProcessInstancesCmd extends AbstractRestartProcessInstanceCm
     if (details.size() == 0) {
       HistoricActivityInstance startActivityInstance = resolveStartActivityInstance(processInstance);
 
-      // instances created <= 7.12
       if (startActivityInstance != null) {
         HistoricDetailQueryImpl queryWithStartActivities = (HistoricDetailQueryImpl) historyService.createHistoricDetailQuery()
                 .variableUpdates()
