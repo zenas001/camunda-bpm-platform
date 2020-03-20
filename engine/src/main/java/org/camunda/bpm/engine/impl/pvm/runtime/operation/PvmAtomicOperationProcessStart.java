@@ -53,7 +53,6 @@ public class PvmAtomicOperationProcessStart extends AbstractPvmEventAtomicOperat
     // "processInstanceStartContext" on the given execution.
     // Do not remove it!
     execution.getProcessInstanceStartContext();
-//    Context.getCommandContext().getHistoricDetailManager().findHistoricDetailsByTaskId("");
 
     return execution;
   }
