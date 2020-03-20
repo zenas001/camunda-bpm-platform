@@ -25,7 +25,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import org.camunda.bpm.engine.BadUserRequestException;
-import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
@@ -402,7 +401,7 @@ public class RestartProcessInstanceSyncTest {
     
     // then
     ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
-        processDefinitionId(processInstance.getProcessDefinitionId()).active().singleResult();
+        .processDefinitionId(processInstance.getProcessDefinitionId()).active().singleResult();
     List<VariableInstance> variables = runtimeService.createVariableInstanceQuery()
         .processInstanceIdIn(restartedProcessInstance.getId()).variableName("var").list();
     assertEquals(1, variables.size());
