@@ -40,6 +40,8 @@ import org.camunda.bpm.engine.impl.bpmn.behavior.SubProcessActivityBehavior;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.cmd.GetActivityInstanceCmd;
 import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.history.HistoryLevel;
+import org.camunda.bpm.engine.impl.history.event.HistoryEventTypes;
 import org.camunda.bpm.engine.impl.jobexecutor.AsyncContinuationJobHandler;
 import org.camunda.bpm.engine.impl.persistence.entity.ActivityInstanceImpl;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
@@ -672,12 +674,16 @@ public class LegacyBehavior {
               .executionIdIn(execution.getProcessInstanceId())
               .singleResult();
 
-          if (variableInstance != null) {
+          if (variableInstance != null && getHistoryLevel().isHistoryEventProduced(HistoryEventTypes.VARIABLE_INSTANCE_CREATE, variableInstance) && !variableInstance.isTransient()) {
             VariableInstanceHistoryListener.INSTANCE.onCreate(variableInstance, variableInstance.getExecution());
           }
         }
       }
     }
+  }
+
+  private static HistoryLevel getHistoryLevel() {
+    return Context.getProcessEngineConfiguration().getHistoryLevel();
   }
 
 }
