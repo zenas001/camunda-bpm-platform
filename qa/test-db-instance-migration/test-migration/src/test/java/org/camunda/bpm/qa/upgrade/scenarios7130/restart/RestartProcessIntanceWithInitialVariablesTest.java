@@ -18,12 +18,17 @@ package org.camunda.bpm.qa.upgrade.scenarios7130.restart;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.util.List;
 
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.history.HistoricDetail;
+import org.camunda.bpm.engine.history.HistoricVariableInstance;
+import org.camunda.bpm.engine.impl.history.event.HistoricVariableUpdateEventEntity;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.VariableInstance;
@@ -38,10 +43,12 @@ public class RestartProcessIntanceWithInitialVariablesTest {
   public ProcessEngineRule engineRule = new ProcessEngineRule("camunda.cfg.xml");
 
   RuntimeService runtimeService;
+  HistoryService historyService;
 
   @Before
   public void assignServices() {
     runtimeService = engineRule.getRuntimeService();
+    historyService = engineRule.getHistoryService();
   }
 
   @Test
@@ -74,7 +81,23 @@ public class RestartProcessIntanceWithInitialVariablesTest {
     assertEquals(1, variables.size());
     assertEquals("var1", variables.get(0).getName());
     assertEquals("value1", variables.get(0).getValue());
- 
+    List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .list();
+
+    assertEquals(1, list.size());
+    HistoricVariableInstance historicVariableInstance = list.get(0);
+    assertEquals(restartedProcessInstance.getId(), historicVariableInstance.getActivityInstanceId());
+    assertEquals("var1", variables.get(0).getName());
+    assertEquals("value1", variables.get(0).getValue());
+
+    HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historyService.createHistoricDetailQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .singleResult();
+    assertNotNull(detail);
+    assertTrue(detail.isInitial());
+    assertEquals("var1", detail.getVariableName());
+    assertEquals("value2", detail.getTextValue());
   }
 
   @Test
@@ -107,10 +130,25 @@ public class RestartProcessIntanceWithInitialVariablesTest {
         .active()
         .singleResult();
 
+    // then 
+    List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
+    assertEquals(3, variables.size());
+    assertEquals("var3", variables.get(0).getName());
+    assertEquals("value2", variables.get(0).getValue());
 
-   List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
-   assertEquals(1, variables.size());
-   assertEquals("var3", variables.get(0).getName());
-   assertEquals("value1", variables.get(0).getValue());
+    List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .list();
+    assertEquals(3, list.size());
+
+    List<HistoricDetail> details = historyService.createHistoricDetailQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .list();
+    assertEquals(3, details.size());
+
+    for (HistoricDetail historicDetail : details) {
+      HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historicDetail;
+      assertTrue(detail.isInitial());
+    }
   }
 }

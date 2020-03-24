@@ -20,7 +20,7 @@ import static org.camunda.bpm.engine.test.api.runtime.migration.ModifiableBpmnMo
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +30,7 @@ import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
+import org.camunda.bpm.engine.impl.history.event.HistoricVariableUpdateEventEntity;
 import org.camunda.bpm.engine.migration.MigrationPlan;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.Execution;
@@ -330,6 +331,16 @@ public class MigrationHistoricVariablesTest {
     HistoricVariableInstance migratedInstance = historyService.createHistoricVariableInstanceQuery().singleResult();
     assertEquals(targetDefinition.getKey(), migratedInstance.getProcessDefinitionKey());
     assertEquals(targetDefinition.getId(), migratedInstance.getProcessDefinitionId());
+
+    // details
+    HistoricVariableUpdateEventEntity historicDetail = (HistoricVariableUpdateEventEntity) historyService.createHistoricDetailQuery()
+        .processInstanceId(processInstance.getId())
+        .singleResult();
+
+    assertNotNull(historicDetail);
+    assertTrue(historicDetail.isInitial());
+    assertEquals("foo", historicDetail.getVariableName());
+    assertEquals("bar", historicDetail.getTextValue());
   }
 
   @Test

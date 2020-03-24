@@ -16,8 +16,10 @@
  */
 package org.camunda.bpm.qa.upgrade.restart;
 
+import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.qa.upgrade.DescribesScenario;
@@ -44,6 +46,17 @@ public class SetVariablesScenario {
         runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "var1", "value2");
         runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "var2", "value1");
         runtimeService.setVariableLocal(processInstanceWithInitialVariables.getId(), "local1", "foo1");
+
+        ManagementService managementService = engine.getManagementService();
+        Job firstJob = managementService.createJobQuery()
+            .processDefinitionKey("asyncBeforeStartProcess_712")
+            .processInstanceId(processInstanceWithInitialVariables.getId())
+            .singleResult();
+        try {
+          managementService.executeJob(firstJob.getId());
+        } catch (Exception e) {
+          // ignore
+        }
 
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
             .processDefinitionKey("asyncBeforeStartProcess_712")

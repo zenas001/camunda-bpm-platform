@@ -16,10 +16,8 @@
  */
 package org.camunda.bpm.qa.upgrade.restart;
 
-import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.qa.upgrade.DescribesScenario;
@@ -44,15 +42,6 @@ public class StartProcessIntanceWithInitialVariablesScenario {
             Variables.createVariables()
                 .putValue("var1", "value1"));
 
-
-        ManagementService managementService = engine.getManagementService();
-        Job firstJob = managementService.createJobQuery()
-            .processDefinitionKey("asyncBeforeStartProcess_712").singleResult();
-        try {
-          managementService.executeJob(firstJob.getId());
-        } catch (Exception e) {
-          // ignore
-        }
 
         businessKey = "7120_ProcessIntanceWithoutExecute";
         runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess_712", businessKey,

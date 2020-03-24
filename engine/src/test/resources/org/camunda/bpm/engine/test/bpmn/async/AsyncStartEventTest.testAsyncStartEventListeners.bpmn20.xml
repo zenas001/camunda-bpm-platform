@@ -10,7 +10,8 @@
 	      class="org.camunda.bpm.engine.test.bpmn.async.AsyncListener"></camundabpm:executionListener>
 	  </extensionElements>
   
-    <startEvent id="startEvent" camundabpm:async="true" />
+    <startEvent id="startEvent" camundabpm:async="true" >
+    </startEvent>
     
     <sequenceFlow sourceRef="startEvent" targetRef="task" />
       

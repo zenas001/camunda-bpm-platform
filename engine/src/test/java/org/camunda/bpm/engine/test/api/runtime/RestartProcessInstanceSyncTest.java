@@ -25,6 +25,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import org.camunda.bpm.engine.BadUserRequestException;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
@@ -36,9 +37,11 @@ import org.camunda.bpm.engine.impl.cfg.multitenancy.TenantIdProvider;
 import org.camunda.bpm.engine.impl.cfg.multitenancy.TenantIdProviderCaseInstanceContext;
 import org.camunda.bpm.engine.impl.cfg.multitenancy.TenantIdProviderHistoricDecisionInstanceContext;
 import org.camunda.bpm.engine.impl.cfg.multitenancy.TenantIdProviderProcessInstanceContext;
+import org.camunda.bpm.engine.impl.history.event.HistoricVariableUpdateEventEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ActivityInstance;
 import org.camunda.bpm.engine.runtime.Execution;
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.VariableInstance;
 import org.camunda.bpm.engine.task.Task;
@@ -80,12 +83,14 @@ public class RestartProcessInstanceSyncTest {
 
   protected RuntimeService runtimeService;
   protected TaskService taskService;
+  protected HistoryService historyService;
   protected TenantIdProvider defaultTenantIdProvider;
 
   @Before
   public void init() {
     runtimeService = engineRule.getRuntimeService();
     taskService = engineRule.getTaskService();
+    historyService = engineRule.getHistoryService();
     defaultTenantIdProvider = engineRule.getProcessEngineConfiguration().getTenantIdProvider();
   }
 
@@ -285,7 +290,8 @@ public class RestartProcessInstanceSyncTest {
     ProcessDefinition processDefinition = testRule.deployAndGetDefinition(ProcessModels.SUBPROCESS_PROCESS);
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("Process");
 
-    Execution subProcess = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).activityId("userTask").singleResult();
+    Execution subProcess = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId())
+        .activityId("userTask").singleResult();
     runtimeService.setVariableLocal(subProcess.getId(), "local", "foo");
     runtimeService.setVariable(processInstance.getId(), "var", "bar");
 
@@ -335,24 +341,35 @@ public class RestartProcessInstanceSyncTest {
   public void shouldSetInitialVersionOfVariables() {
     // given
     ProcessDefinition processDefinition = testRule.deployAndGetDefinition(ProcessModels.SUBPROCESS_PROCESS);
-    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("Process", Variables.createVariables().putValue("var", "bar"));
+    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("Process",
+        Variables.createVariables().putValue("var", "bar"));
     runtimeService.setVariable(processInstance.getId(), "bar", "foo");
-    
+
     runtimeService.deleteProcessInstance(processInstance.getId(), "test");
-    
+
     // when
     runtimeService.restartProcessInstances(processDefinition.getId())
     .startBeforeActivity("userTask")
     .processInstanceIds(processInstance.getId())
     .initialSetOfVariables()
     .execute();
-    
+
     // then
     ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).active().singleResult();
     List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
     assertEquals(1, variables.size());
     assertEquals("var", variables.get(0).getName());
     assertEquals("bar", variables.get(0).getValue());
+
+    // details
+    HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historyService.createHistoricDetailQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .singleResult();
+
+    assertNotNull(detail);
+    assertEquals("var", detail.getVariableName());
+    assertTrue(detail.isInitial());
+    assertEquals("bar", detail.getTextValue());
   }
 
   @Test
@@ -362,6 +379,9 @@ public class RestartProcessInstanceSyncTest {
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("Process",
         Variables.createVariables().putValue("var", "bar"));
     runtimeService.setVariable(processInstance.getId(), "bar", "foo");
+
+    Job job = engineRule.getManagementService().createJobQuery().singleResult();
+    engineRule.getManagementService().executeJob(job.getId());
 
     runtimeService.deleteProcessInstance(processInstance.getId(), "test");
 
@@ -380,6 +400,16 @@ public class RestartProcessInstanceSyncTest {
     assertEquals(1, variables.size());
     assertEquals("var", variables.get(0).getName());
     assertEquals("bar", variables.get(0).getValue());
+
+    // details
+    HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historyService.createHistoricDetailQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .singleResult();
+
+    assertNotNull(detail);
+    assertTrue(detail.isInitial());
+    assertEquals("var", detail.getVariableName());
+    assertEquals("bar", detail.getTextValue());
   }
 
   @Test
@@ -389,16 +419,19 @@ public class RestartProcessInstanceSyncTest {
     ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("asyncStartEvent",
         Variables.createVariables().putValue("var", "bar"));
     runtimeService.setVariable(processInstance.getId(), "bar", "foo");
-    
+
+    Job job = engineRule.getManagementService().createJobQuery().singleResult();
+    engineRule.getManagementService().executeJob(job.getId());
+
     runtimeService.deleteProcessInstance(processInstance.getId(), "test");
-    
+
     // when
     runtimeService.restartProcessInstances(processInstance.getProcessDefinitionId())
     .startBeforeActivity("task")
     .processInstanceIds(processInstance.getId())
     .initialSetOfVariables()
     .execute();
-    
+
     // then
     ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
         .processDefinitionId(processInstance.getProcessDefinitionId()).active().singleResult();
@@ -419,7 +452,8 @@ public class RestartProcessInstanceSyncTest {
   })
   public void shouldSetInitialVersionOfVariablesAsyncBeforeCallActivity() {
     // given
-    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("super", Variables.createVariables().putValue("var", "bar"));
+    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("super",
+        Variables.createVariables().putValue("var", "bar"));
     runtimeService.setVariable(processInstance.getId(), "bar", "foo");
 
     runtimeService.deleteProcessInstance(processInstance.getId(), "test");
