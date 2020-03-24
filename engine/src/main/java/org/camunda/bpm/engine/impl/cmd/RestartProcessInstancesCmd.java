@@ -196,15 +196,15 @@ public class RestartProcessInstancesCmd extends AbstractRestartProcessInstanceCm
     HistoryService historyService = commandContext.getProcessEngineConfiguration()
         .getHistoryService();
 
-    HistoricDetailQueryImpl query =
-        (HistoricDetailQueryImpl) historyService.createHistoricDetailQuery()
+    List<HistoricDetail> historicDetails =
+        historyService.createHistoricDetailQuery()
         .variableUpdates()
         .executionId(processInstance.getId())
-        .initial();
-
-    List<HistoricDetail> historicDetails = query
+        .initial()
         .list();
 
+    // legacy behavior < 7.13: the initial flag is never set for instances started
+    // in these versions. We must perform the old logic of finding initial variables
     if (historicDetails.size() == 0) {
       HistoricActivityInstance startActivityInstance = resolveStartActivityInstance(processInstance);
 
