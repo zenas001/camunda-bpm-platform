@@ -39,6 +39,7 @@ import org.camunda.bpm.engine.test.ProcessEngineRule;
 import org.camunda.bpm.engine.test.RequiredHistoryLevel;
 import org.camunda.bpm.engine.test.api.runtime.migration.MigrationTestRule;
 import org.camunda.bpm.engine.test.api.runtime.migration.ModifiableBpmnModelInstance;
+import org.camunda.bpm.engine.test.api.runtime.migration.models.AsyncProcessModels;
 import org.camunda.bpm.engine.test.api.runtime.migration.models.CompensationModels;
 import org.camunda.bpm.engine.test.api.runtime.migration.models.MultiInstanceProcessModels;
 import org.camunda.bpm.engine.test.api.runtime.migration.models.ProcessModels;
@@ -324,6 +325,44 @@ public class MigrationHistoricVariablesTest {
     // then job succeeds
     assertNull(managementService.createJobQuery().singleResult());
     assertNotNull(runtimeService.createProcessInstanceQuery().activityIdIn(userTask).singleResult());
+
+    // and variable history was written
+    HistoricVariableInstance migratedInstance = historyService.createHistoricVariableInstanceQuery().singleResult();
+    assertEquals(targetDefinition.getKey(), migratedInstance.getProcessDefinitionKey());
+    assertEquals(targetDefinition.getId(), migratedInstance.getProcessDefinitionId());
+  }
+
+  @Test
+  @RequiredHistoryLevel(ProcessEngineConfiguration.HISTORY_AUDIT)
+  public void testMigrateHistoryVariableInstanceWithAsyncBefore() {
+    //given
+    BpmnModelInstance model = AsyncProcessModels.ASYNC_BEFORE_USER_TASK_PROCESS;
+
+    ProcessDefinition sourceDefinition = testHelper.deployAndGetDefinition(model);
+    ProcessDefinition targetDefinition = testHelper.deployAndGetDefinition(modify(model)
+        .changeElementId(ProcessModels.PROCESS_KEY, "new" + ProcessModels.PROCESS_KEY));
+
+    ProcessInstance processInstance = runtimeService.startProcessInstanceById(sourceDefinition.getId());
+
+    runtimeService.setVariable(processInstance.getId(), "test", 3537);
+    HistoricVariableInstance instance = historyService.createHistoricVariableInstanceQuery().singleResult();
+
+    MigrationPlan migrationPlan = rule.getRuntimeService()
+      .createMigrationPlan(sourceDefinition.getId(), targetDefinition.getId())
+      .mapActivities("userTask", "userTask")
+      .build();
+
+    //when
+    runtimeService.newMigration(migrationPlan)
+      .processInstanceIds(Arrays.asList(processInstance.getId()))
+      .execute();
+
+    //then
+    HistoricVariableInstance migratedInstance = historyService.createHistoricVariableInstanceQuery().singleResult();
+    assertEquals(targetDefinition.getKey(), migratedInstance.getProcessDefinitionKey());
+    assertEquals(targetDefinition.getId(), migratedInstance.getProcessDefinitionId());
+    assertEquals(instance.getActivityInstanceId(), migratedInstance.getActivityInstanceId());
+    assertEquals(instance.getExecutionId(), migratedInstance.getExecutionId());
   }
 
   protected void executeJob(Job job) {
