@@ -476,7 +476,6 @@ public class DefaultHistoryEventProducer implements HistoryEventProducer {
       }
     }
 
-
     return evt;
   }
 

@@ -652,9 +652,10 @@ public class LegacyBehavior {
    * This method takes care of that.
    */
   public static void createMissingHistoricVariables(PvmExecutionImpl execution) {
-    VariableMapImpl variables = execution.getVariables();
+    Collection<VariableInstanceEntity> variables = ((ExecutionEntity) execution).getVariablesInternal();
+    
     if (variables != null && variables.size() > 0) {
-      String variableName = variables.keySet().iterator().next();
+      String variableName = variables.iterator().next().getName();
 
       HistoricVariableInstance historicVariable = Context.getProcessEngineConfiguration()
           .getHistoryService()
@@ -665,17 +666,10 @@ public class LegacyBehavior {
 
       // trigger historic creation if the history is not presented already 
       if (historicVariable == null) {
-        for (String name : variables.keySet()) {
+        for (VariableInstanceEntity variable : variables) {
 
-          VariableInstanceEntity variableInstance = (VariableInstanceEntity) Context.getProcessEngineConfiguration()
-              .getRuntimeService()
-              .createVariableInstanceQuery()
-              .variableName(name)
-              .executionIdIn(execution.getProcessInstanceId())
-              .singleResult();
-
-          if (variableInstance != null && getHistoryLevel().isHistoryEventProduced(HistoryEventTypes.VARIABLE_INSTANCE_CREATE, variableInstance) && !variableInstance.isTransient()) {
-            VariableInstanceHistoryListener.INSTANCE.onCreate(variableInstance, variableInstance.getExecution());
+          if (getHistoryLevel().isHistoryEventProduced(HistoryEventTypes.VARIABLE_INSTANCE_CREATE, variable)) {
+            VariableInstanceHistoryListener.INSTANCE.onCreate(variable, variable.getExecution());
           }
         }
       }
