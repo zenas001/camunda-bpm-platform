@@ -199,12 +199,10 @@ public class RestartProcessInstancesCmd extends AbstractRestartProcessInstanceCm
     HistoricDetailQueryImpl query =
         (HistoricDetailQueryImpl) historyService.createHistoricDetailQuery()
         .variableUpdates()
-        .activityInstanceId(processInstance.getId())
         .executionId(processInstance.getId())
         .initial();
 
     List<HistoricDetail> historicDetails = query
-        .sequenceCounter(1)
         .list();
 
     if (historicDetails.size() == 0) {
