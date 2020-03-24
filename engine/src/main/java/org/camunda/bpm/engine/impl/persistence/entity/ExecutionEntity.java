@@ -28,6 +28,8 @@ import java.util.Set;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineServices;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
+import org.camunda.bpm.engine.history.HistoricDetail;
+import org.camunda.bpm.engine.history.HistoricVariableUpdate;
 import org.camunda.bpm.engine.impl.ProcessEngineLogger;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.bpmn.parser.EventSubscriptionDeclaration;
@@ -823,6 +825,22 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
 
   public ExecutionEntity getProcessInstanceExecution() {
     return processInstance;
+  }
+  
+  /**
+   * returns true if a process instance is in the starting phase. During that phase,
+   * all variables that are set are considered as initial variables 
+   * (see {@link HistoricVariableUpdateEventEntity#isInitial}).
+   */
+  public boolean isProcessInstanceStarting() {
+    // the process instance can only be starting if it is currently in main-memory already
+    // we never have to access the database
+    
+    return 
+        // case 1: processInstance reference is set
+        (processInstance != null && processInstance.getExecutionStartContext() != null) ||
+        // case 2: processInstance reference is not set, but "this" execution is the process instance
+        (id.equals(processInstanceId) && getExecutionStartContext() != null);
   }
 
   @Override
