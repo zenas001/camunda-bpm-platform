@@ -695,12 +695,53 @@ public class HistoricDetailQueryTest {
   }
 
   @Test
-  public void shouldInitialFlagAsyncBeforeStartEventExecutionListener() {
+  public void testInitialFlagAsyncBeforeStartEventExecutionListener() {
     // given
     BpmnModelInstance model = Bpmn.createExecutableProcess("process")
         .startEvent()
         .camundaAsyncBefore()
         .camundaExecutionListenerClass("start", AsyncListener.class)
+        .userTask()
+        .endEvent()
+        .done();
+
+    testHelper.deployAndGetDefinition(model);
+    String initalValue = "initial";
+    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("process",
+        Variables.createVariables().putValue("foo", initalValue));
+
+    String jobId = managementService.createJobQuery().singleResult().getId();
+    managementService.executeJob(jobId);
+
+
+    // when
+    List<HistoricDetail> details = historyService.createHistoricDetailQuery()
+        .processInstanceId(processInstance.getId())
+        .list();
+
+    // then
+    assertEquals(2, details.size());
+    for (HistoricDetail historicDetail : details) {
+      HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historicDetail;
+      String variableValue = detail.getTextValue();
+      assertTrue(detail.isInitial());
+      if (variableValue.equals(initalValue)) {
+        assertEquals("foo", detail.getVariableName());
+      } else if (variableValue.equals("listener invoked")) {
+        assertEquals("listener", detail.getVariableName());
+      } else {
+        fail("illegal variable value:" + variableValue);
+      }
+    }
+  }
+
+  @Test
+  public void testInitialFlagAsyncBeforeStartEventEndExecutionListener() {
+    // given
+    BpmnModelInstance model = Bpmn.createExecutableProcess("process")
+        .startEvent()
+        .camundaAsyncBefore()
+        .camundaExecutionListenerClass("end", AsyncListener.class)
         .userTask()
         .endEvent()
         .done();

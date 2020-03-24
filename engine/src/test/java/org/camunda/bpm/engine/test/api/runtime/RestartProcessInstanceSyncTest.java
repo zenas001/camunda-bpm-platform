@@ -51,6 +51,7 @@ import org.camunda.bpm.engine.test.RequiredHistoryLevel;
 import org.camunda.bpm.engine.test.api.runtime.migration.models.AsyncProcessModels;
 import org.camunda.bpm.engine.test.api.runtime.migration.models.ProcessModels;
 import org.camunda.bpm.engine.test.api.runtime.util.IncrementCounterListener;
+import org.camunda.bpm.engine.test.bpmn.async.AsyncListener;
 import org.camunda.bpm.engine.test.util.ProcessEngineTestRule;
 import org.camunda.bpm.engine.test.util.ProvidedProcessEngineRule;
 import org.camunda.bpm.engine.variable.Variables;
@@ -367,9 +368,41 @@ public class RestartProcessInstanceSyncTest {
         .singleResult();
 
     assertNotNull(detail);
-    assertEquals("var", detail.getVariableName());
     assertTrue(detail.isInitial());
+    assertEquals("var", detail.getVariableName());
     assertEquals("bar", detail.getTextValue());
+  }
+
+  @Test
+  public void shouldNotSetVariables() {
+    // given
+    ProcessDefinition processDefinition = testRule.deployAndGetDefinition(ProcessModels.SUBPROCESS_PROCESS);
+    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("Process");
+    runtimeService.setVariable(processInstance.getId(), "bar", "foo");
+
+    runtimeService.deleteProcessInstance(processInstance.getId(), "test");
+
+    // when
+    runtimeService.restartProcessInstances(processDefinition.getId())
+    .startBeforeActivity("userTask")
+    .processInstanceIds(processInstance.getId())
+    .initialSetOfVariables()
+    .execute();
+
+    // then
+    ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery().processDefinitionId(processDefinition.getId()).active().singleResult();
+    List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
+    assertEquals(0, variables.size());
+
+    // details
+    HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historyService.createHistoricDetailQuery()
+//        .processInstanceId(restartedProcessInstance.getId())
+        .singleResult();
+
+    assertNotNull(detail);
+    assertFalse(detail.isInitial());
+    assertEquals("bar", detail.getVariableName());
+    assertEquals("foo", detail.getTextValue());
   }
 
   @Test
@@ -407,10 +440,51 @@ public class RestartProcessInstanceSyncTest {
         .singleResult();
 
     assertNotNull(detail);
-    assertTrue(detail.isInitial());
+    assertFalse(detail.isInitial());
     assertEquals("var", detail.getVariableName());
     assertEquals("bar", detail.getTextValue());
   }
+
+  @Test
+  public void shouldSetInitialVersionOfVariablesAsyncBeforeStartEventEndExecutionListener() {
+  // given
+  BpmnModelInstance model = Bpmn.createExecutableProcess("process")
+      .startEvent()
+      .camundaAsyncBefore()
+      .camundaExecutionListenerClass("end", AsyncListener.class)
+      .userTask("task")
+      .endEvent()
+      .done();
+
+  testRule.deployAndGetDefinition(model);
+  ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("process",
+      Variables.createVariables().putValue("var", "bar"));
+  runtimeService.setVariable(processInstance.getId(), "bar", "foo");
+
+  Job job = engineRule.getManagementService().createJobQuery().singleResult();
+  engineRule.getManagementService().executeJob(job.getId());
+
+  runtimeService.deleteProcessInstance(processInstance.getId(), "test");
+
+  // when
+  runtimeService.restartProcessInstances(processInstance.getProcessDefinitionId())
+  .startBeforeActivity("task")
+  .processInstanceIds(processInstance.getId())
+  .initialSetOfVariables()
+  .execute();
+
+  // then
+  ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
+      .processDefinitionId(processInstance.getProcessDefinitionId()).active().singleResult();
+  List<VariableInstance> variables = runtimeService.createVariableInstanceQuery()
+      .processInstanceIdIn(restartedProcessInstance.getId()).variableName("var").list();
+  assertEquals(1, variables.size());
+  assertEquals("bar", variables.get(0).getValue());
+  variables = runtimeService.createVariableInstanceQuery()
+      .processInstanceIdIn(restartedProcessInstance.getId()).variableName("listener").list();
+  assertEquals(1, variables.size());
+  assertEquals("listener invoked", variables.get(0).getValue());
+}
 
   @Test
   @Deployment(resources = {"org/camunda/bpm/engine/test/bpmn/async/AsyncStartEventTest.testAsyncStartEventListeners.bpmn20.xml"})
