@@ -17,10 +17,11 @@
 package org.camunda.bpm.qa.upgrade.scenarios7130.restart;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.camunda.bpm.engine.HistoryService;
@@ -52,7 +53,8 @@ public class RestartProcessIntanceWithInitialVariablesTest {
   }
 
   @Test
-  public void shouldRestartWithInitialVariablesJobExecutedIn712() throws ParseException {
+  public void shouldRestartWithInitialVariablesJobExecutedIn712() {
+    // given
     String businessKey = "712_ProcessIntanceExecuted";
     ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery()
         .processInstanceBusinessKey(businessKey)
@@ -79,7 +81,7 @@ public class RestartProcessIntanceWithInitialVariablesTest {
         .singleResult();
     List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
     assertEquals(1, variables.size());
-    assertEquals("var1", variables.get(0).getName());
+    assertEquals("initial1", variables.get(0).getName());
     assertEquals("value1", variables.get(0).getValue());
     List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery()
         .processInstanceId(restartedProcessInstance.getId())
@@ -88,34 +90,103 @@ public class RestartProcessIntanceWithInitialVariablesTest {
     assertEquals(1, list.size());
     HistoricVariableInstance historicVariableInstance = list.get(0);
     assertEquals(restartedProcessInstance.getId(), historicVariableInstance.getActivityInstanceId());
-    assertEquals("var1", variables.get(0).getName());
+    assertEquals("initial1", variables.get(0).getName());
     assertEquals("value1", variables.get(0).getValue());
 
     HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historyService.createHistoricDetailQuery()
         .processInstanceId(restartedProcessInstance.getId())
         .singleResult();
     assertNotNull(detail);
-    assertTrue(detail.isInitial());
-    assertEquals("var1", detail.getVariableName());
-    assertEquals("value2", detail.getTextValue());
+    assertFalse(detail.isInitial());
+    assertEquals("initial1", detail.getVariableName());
+    assertEquals("value1", detail.getTextValue());
   }
-
+  
   @Test
-  public void shouldRestartWithInitialVariablesJobExecutedIn713() throws ParseException {
+  public void shouldRestartWithInitialVariablesJobExecutedIn713() {
+    // given
+    String businessKey = "7120_ProcessIntanceWithoutExecute";
+    ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery()
+        .processInstanceBusinessKey(businessKey)
+        .active()
+        .singleResult();
+
     ManagementService managementService = engineRule.getManagementService();
     Job asyncJob = managementService.createJobQuery()
-        .processDefinitionKey("asyncBeforeStartProcess_712").singleResult();
+        .processDefinitionKey("asyncBeforeStartProcess_712")
+        .processInstanceId(processInstanceWithInitialVariables.getId())
+        .singleResult();
     try {
       managementService.executeJob(asyncJob.getId());
     } catch (Exception e) {
       // ignore
     }
 
-    String businessKey = "7120_ProcessIntanceWithoutExecute";
+    runtimeService.deleteProcessInstance(processInstanceWithInitialVariables.getId(), "test");
+    // when
+    runtimeService.restartProcessInstances(processInstanceWithInitialVariables.getProcessDefinitionId())
+    .startBeforeActivity("theTask")
+    .processInstanceIds(processInstanceWithInitialVariables.getId())
+    .initialSetOfVariables()
+    .execute();
+
+    ProcessInstance restartedProcessInstance = runtimeService.createProcessInstanceQuery()
+        .processInstanceBusinessKey(businessKey)
+        .active()
+        .singleResult();
+
+    // then 
+    List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
+    assertEquals(3, variables.size());
+    for (VariableInstance variableInstance : variables) {
+      if (variableInstance.getName().equals("initial2")) {
+        assertEquals("value1", variableInstance.getValue());
+      } else if (variableInstance.getName().equals("foo")) {
+        assertEquals("value", variableInstance.getValue());
+      } else if (variableInstance.getName().equals("local")) {
+        assertEquals("foo1", variableInstance.getValue());
+      } else {
+        fail("unexpected variable");
+      }
+    }
+
+    List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .list();
+    assertEquals(3, list.size());
+
+    List<HistoricDetail> details = historyService.createHistoricDetailQuery()
+        .processInstanceId(restartedProcessInstance.getId())
+        .list();
+    assertEquals(3, details.size());
+
+    for (HistoricDetail historicDetail : details) {
+      HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historicDetail;
+      assertFalse(detail.isInitial());
+    }
+  }
+
+  @Test
+  public void shouldRestartWithInitialVariablesJobExecutedAndSetVariablesIn713() {
+    // given
+    String businessKey = "7120_ProcessIntanceWithoutExecuteAndSetVariables";
     ProcessInstance processInstanceWithInitialVariables = runtimeService.createProcessInstanceQuery()
         .processInstanceBusinessKey(businessKey)
         .active()
         .singleResult();
+
+    runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "varIn713", "baz");
+    
+    ManagementService managementService = engineRule.getManagementService();
+    Job asyncJob = managementService.createJobQuery()
+        .processDefinitionKey("asyncBeforeStartProcess_712")
+        .processInstanceId(processInstanceWithInitialVariables.getId())
+        .singleResult();
+    try {
+      managementService.executeJob(asyncJob.getId());
+    } catch (Exception e) {
+      // ignore
+    }
 
     runtimeService.deleteProcessInstance(processInstanceWithInitialVariables.getId(), "test");
     // when
@@ -132,19 +203,26 @@ public class RestartProcessIntanceWithInitialVariablesTest {
 
     // then 
     List<VariableInstance> variables = runtimeService.createVariableInstanceQuery().processInstanceIdIn(restartedProcessInstance.getId()).list();
-    assertEquals(3, variables.size());
-    assertEquals("var3", variables.get(0).getName());
-    assertEquals("value2", variables.get(0).getValue());
+    assertEquals(2, variables.size());
+    for (VariableInstance variableInstance : variables) {
+      if (variableInstance.getName().equals("inital3")) {
+        assertEquals("value1", variableInstance.getValue());
+      } else if (variableInstance.getName().equals("varIn713")) {
+        assertEquals("baz", variableInstance.getValue());
+      } else {
+        fail("unexpected variable");
+      }
+    }
 
     List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery()
         .processInstanceId(restartedProcessInstance.getId())
         .list();
-    assertEquals(3, list.size());
+    assertEquals(2, list.size());
 
     List<HistoricDetail> details = historyService.createHistoricDetailQuery()
         .processInstanceId(restartedProcessInstance.getId())
         .list();
-    assertEquals(3, details.size());
+    assertEquals(2, details.size());
 
     for (HistoricDetail historicDetail : details) {
       HistoricVariableUpdateEventEntity detail = (HistoricVariableUpdateEventEntity) historicDetail;

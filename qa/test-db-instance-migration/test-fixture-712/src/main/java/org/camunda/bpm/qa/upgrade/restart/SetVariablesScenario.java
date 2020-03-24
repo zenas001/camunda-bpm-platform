@@ -42,11 +42,6 @@ public class SetVariablesScenario {
             .processDefinitionKey("asyncBeforeStartProcess_712")
             .processInstanceBusinessKey("712_ProcessIntanceExecuted")
             .singleResult();
-
-        runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "var1", "value2");
-        runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "var2", "value1");
-        runtimeService.setVariableLocal(processInstanceWithInitialVariables.getId(), "local1", "foo1");
-
         ManagementService managementService = engine.getManagementService();
         Job firstJob = managementService.createJobQuery()
             .processDefinitionKey("asyncBeforeStartProcess_712")
@@ -62,9 +57,8 @@ public class SetVariablesScenario {
             .processDefinitionKey("asyncBeforeStartProcess_712")
             .processInstanceBusinessKey("7120_ProcessIntanceWithoutExecute")
             .singleResult();
-        runtimeService.setVariable(processInstance.getId(), "var3", "value2");
-        runtimeService.setVariable(processInstance.getId(), "var4", "value1");
-        runtimeService.setVariableLocal(processInstance.getId(), "local2", "foo1");
+        runtimeService.setVariable(processInstance.getId(), "foo", "value");
+        runtimeService.setVariableLocal(processInstance.getId(), "local", "foo1");
       }
     };
   }

@@ -40,13 +40,17 @@ public class StartProcessIntanceWithInitialVariablesScenario {
         String businessKey = "712_ProcessIntanceExecuted";
         runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess_712", businessKey,
             Variables.createVariables()
-                .putValue("var1", "value1"));
-
+                .putValue("initial1", "value1"));
 
         businessKey = "7120_ProcessIntanceWithoutExecute";
         runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess_712", businessKey,
             Variables.createVariables()
-            .putValue("var3", "value1"));
+            .putValue("initial2", "value1"));
+
+        businessKey = "7120_ProcessIntanceWithoutExecuteAndSetVariables";
+        runtimeService.startProcessInstanceByKey("asyncBeforeStartProcess_712", businessKey,
+            Variables.createVariables()
+            .putValue("initial3", "value1"));
       }
     };
   }
