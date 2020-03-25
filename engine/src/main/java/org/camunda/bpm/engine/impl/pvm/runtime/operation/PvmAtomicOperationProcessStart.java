@@ -54,6 +54,10 @@ public class PvmAtomicOperationProcessStart extends AbstractPvmEventAtomicOperat
     // Do not remove it!
     execution.getProcessInstanceStartContext();
 
+    if (execution.getActivity() != null && execution.getActivity().isAsyncBefore()) {
+      LegacyBehavior.createMissingHistoricVariables(execution);
+    }
+
     return execution;
   }
 
@@ -79,10 +83,6 @@ public class PvmAtomicOperationProcessStart extends AbstractPvmEventAtomicOperat
           execution.setActivityInstanceId(execution.getId());
           execution.performOperation(ACTIVITY_INIT_STACK);
 
-        }
-
-        if (execution.getActivity() != null && execution.getActivity().isAsyncBefore()) {
-          LegacyBehavior.createMissingHistoricVariables(execution);
         }
 
         return null;

@@ -835,7 +835,6 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
         (processInstance != null && processInstance.getExecutionStartContext() != null) ||
         // case 2: processInstance reference is not set, but "this" execution is the process instance
         (id.equals(processInstanceId) && getExecutionStartContext() != null);
-        // TODO end listener
   }
 
   @Override
@@ -1272,7 +1271,6 @@ public class ExecutionEntity extends PvmExecutionImpl implements Execution, Proc
         && !(getActivity().getActivityBehavior() instanceof CompositeActivityBehavior);
   }
 
-  @Override
   public Collection<VariableInstanceEntity> provideVariables() {
     return Context.getCommandContext().getVariableInstanceManager().findVariableInstancesByExecutionId(id);
   }

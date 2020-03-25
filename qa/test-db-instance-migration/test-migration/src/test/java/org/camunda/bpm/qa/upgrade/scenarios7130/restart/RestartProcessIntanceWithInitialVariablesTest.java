@@ -176,7 +176,7 @@ public class RestartProcessIntanceWithInitialVariablesTest {
         .singleResult();
 
     runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "varIn713", "baz");
-    
+
     ManagementService managementService = engineRule.getManagementService();
     Job asyncJob = managementService.createJobQuery()
         .processDefinitionKey("asyncBeforeStartProcess_712")
