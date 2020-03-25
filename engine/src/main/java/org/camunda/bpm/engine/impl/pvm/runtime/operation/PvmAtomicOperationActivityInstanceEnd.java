@@ -20,7 +20,6 @@ import org.camunda.bpm.engine.impl.ProcessEngineLogger;
 import org.camunda.bpm.engine.impl.pvm.PvmActivity;
 import org.camunda.bpm.engine.impl.pvm.PvmLogger;
 import org.camunda.bpm.engine.impl.pvm.delegate.CompositeActivityBehavior;
-import org.camunda.bpm.engine.impl.pvm.runtime.ActivityInstanceState;
 import org.camunda.bpm.engine.impl.pvm.runtime.CompensationBehavior;
 import org.camunda.bpm.engine.impl.pvm.runtime.LegacyBehavior;
 import org.camunda.bpm.engine.impl.pvm.runtime.PvmExecutionImpl;
