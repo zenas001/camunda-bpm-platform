@@ -175,6 +175,8 @@ public class RestartProcessIntanceWithInitialVariablesTest {
         .active()
         .singleResult();
 
+    
+//    runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "initial3", "value1");
     runtimeService.setVariable(processInstanceWithInitialVariables.getId(), "varIn713", "baz");
 
     ManagementService managementService = engineRule.getManagementService();
