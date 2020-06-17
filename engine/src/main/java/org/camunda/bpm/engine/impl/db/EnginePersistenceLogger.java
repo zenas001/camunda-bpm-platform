@@ -16,13 +16,11 @@
  */
 package org.camunda.bpm.engine.impl.db;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.executor.BatchExecutorException;
 import org.apache.ibatis.executor.BatchResult;
 import org.camunda.bpm.application.ProcessApplicationUnavailableException;
 import org.camunda.bpm.engine.AuthorizationException;
@@ -739,4 +737,30 @@ public class EnginePersistenceLogger extends ProcessEngineLogger {
     ));
   }
 
+  public void noInstallationIdPropertyFound() {
+    logDebug(
+        "095", "No installation id property found in database");
+  }
+
+  public void creatingInstallationPropertyInDatabase(String value) {
+    logDebug(
+        "096",
+        "Creating installation id property in database with value: {}", value);
+  }
+
+  public void couldNotSelectInstallationId(String message) {
+    logDebug(
+        "097",
+        "Could not select installation id property: {}", message);
+  }
+
+  public void noInstallationIdLockPropertyFound() {
+    logDebug(
+        "098", "No installation id lock property found in database");
+  }
+
+  public void installationIdPropertyFound(String value) {
+    logDebug(
+        "099", "Installation id property found in database: {}", value);
+  }
 }

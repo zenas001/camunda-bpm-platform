@@ -144,6 +144,7 @@ public class ProcessEngineImpl implements ProcessEngine {
   protected void executeSchemaOperations() {
     commandExecutorSchemaOperations.execute(processEngineConfiguration.getSchemaOperationsCommand());
     commandExecutorSchemaOperations.execute(processEngineConfiguration.getHistoryLevelCommand());
+    commandExecutorSchemaOperations.execute(processEngineConfiguration.getInstallationIdInitializationCommand());
 
     try {
       commandExecutorSchemaOperations.execute(processEngineConfiguration.getProcessEngineBootstrapCommand());

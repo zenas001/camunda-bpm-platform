@@ -26,6 +26,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.identity.PasswordPolicy;
 import org.camunda.bpm.engine.impl.BootstrapEngineCommand;
 import org.camunda.bpm.engine.impl.HistoryLevelSetupCommand;
+import org.camunda.bpm.engine.impl.InstallationIdInitializationCommand;
 import org.camunda.bpm.engine.impl.SchemaOperationsProcessEngineBuild;
 import org.camunda.bpm.engine.impl.cfg.BeansConfigurationHelper;
 import org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration;
@@ -247,6 +248,7 @@ public abstract class ProcessEngineConfiguration {
   protected SchemaOperationsCommand schemaOperationsCommand = new SchemaOperationsProcessEngineBuild();
   protected ProcessEngineBootstrapCommand bootstrapCommand = new BootstrapEngineCommand();
   protected HistoryLevelSetupCommand historyLevelCommand = new HistoryLevelSetupCommand();
+  protected InstallationIdInitializationCommand installationIdInitializationCommand = new InstallationIdInitializationCommand();
   protected boolean transactionsExternallyManaged = false;
   /** the number of seconds the jdbc driver will wait for a response from the database */
   protected Integer jdbcStatementTimeout;
@@ -410,6 +412,9 @@ public abstract class ProcessEngineConfiguration {
 
   /** Indicates whether type validation should be done before deserialization */
   protected boolean deserializationTypeValidationEnabled = false;
+
+  /** An unique installation id identifier */
+  protected String installationId;
 
   /** use one of the static createXxxx methods instead */
   protected ProcessEngineConfiguration() {
@@ -589,6 +594,15 @@ public abstract class ProcessEngineConfiguration {
 
   public void setHistoryLevelCommand(HistoryLevelSetupCommand historyLevelCommand) {
     this.historyLevelCommand = historyLevelCommand;
+  }
+
+  public InstallationIdInitializationCommand getInstallationIdInitializationCommand() {
+    return installationIdInitializationCommand;
+  }
+
+  public void setInstallationIdInitializationCommand(
+      InstallationIdInitializationCommand installationIdInitializationCommand) {
+    this.installationIdInitializationCommand = installationIdInitializationCommand;
   }
 
   public String getJdbcDriver() {
@@ -1052,6 +1066,15 @@ public abstract class ProcessEngineConfiguration {
 
   public ProcessEngineConfiguration setDeserializationTypeValidationEnabled(boolean deserializationTypeValidationEnabled) {
     this.deserializationTypeValidationEnabled = deserializationTypeValidationEnabled;
+    return this;
+  }
+
+  public String getInstallationId() {
+    return installationId;
+  }
+
+  public ProcessEngineConfiguration setInstallationId(String installationId) {
+    this.installationId = installationId;
     return this;
   }
 
