@@ -42,6 +42,7 @@ pipeline{
         container("maven"){
           git credentialsId: 'camunda-jenkins-github-ssh',
               url: 'git@github.com:camunda/camunda-bpm-webapp.git'
+          sh("pwd")
           configFileProvider([configFile(fileId: 'maven-nexus-settings', variable: 'MAVEN_SETTINGS_XML')]) {
             sh("cd camunda-bpm-webapp && mvn -s \$MAVEN_SETTINGS_XML -B -T3 clean install -D skipTests && cd ..")
           }
