@@ -40,7 +40,7 @@ pipeline{
       }
       steps{
         container("maven"){
-          configFileProvider([configFile(fileId: 'maven-nexus-settings-local-repo', variable: 'MAVEN_SETTINGS_XML')]) {
+          configFileProvider([configFile(fileId: 'maven-nexus-settings', variable: 'MAVEN_SETTINGS_XML')]) {
             sh("mvn -s \$MAVEN_SETTINGS_XML -B clean install")
           }
         }
