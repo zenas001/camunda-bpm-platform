@@ -21,11 +21,11 @@ spec:
       value: Europe/Berlin
     resources:
       limits:
-        cpu: 1
-        memory: 512Mi
+        cpu: 3
+        memory: 8Gi
       requests:
-        cpu: 1
-        memory: 512Mi
+        cpu: 3
+        memory: 8Gi
     """
 }
 
@@ -41,7 +41,7 @@ pipeline{
       steps{
         container("maven"){
           configFileProvider([configFile(fileId: 'maven-nexus-settings', variable: 'MAVEN_SETTINGS_XML')]) {
-            sh("mvn -s \$MAVEN_SETTINGS_XML -B clean install -D skipTests")
+            sh("mvn -s \$MAVEN_SETTINGS_XML -B -T3 clean install -D skipTests")
           }
         }
       }
