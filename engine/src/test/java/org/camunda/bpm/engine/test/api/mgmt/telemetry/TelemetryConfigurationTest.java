@@ -67,4 +67,20 @@ public class TelemetryConfigurationTest {
     assertThat(Boolean.parseBoolean(fetchConfigurationProperty(processEngineConfiguration).getValue())).isTrue();
   }
 
+  @Test
+  public void shouldStartEngineWithChangedTelemetryEndpoint() {
+    // given
+    String telemetryEndpoint = "http://localhost:8081/pings";
+    processEngineConfiguration = new StandaloneInMemProcessEngineConfiguration();
+    processEngineConfiguration
+        .setTelemetryEndpoint(telemetryEndpoint)
+        .setJdbcUrl("jdbc:h2:mem:camunda" + getClass().getSimpleName());
+
+    // when
+    processEngineConfiguration.buildProcessEngine();
+
+    // then
+    assertThat(processEngineConfiguration.getTelemetryEndpoint()).isEqualTo(telemetryEndpoint);
+  }
+
 }
